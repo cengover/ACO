@@ -26,27 +26,29 @@ class Bene: public adevs::Atomic<IO>
 		double ta();
 		/// Output value garbage collection.
 		void gc_output(adevs::Bag<IO>& g);
+		int id;
 		int insurance; // 0 = Exist, 1 = Not-exist
 		int behavior; // 0 = Un-Healthy, 1 = Healthy
-		int health; // 0 = Healthy, 1 = Sick
+		int health; // 0 = Healthy, 1 = Pre-Diabetes, 2 = Diabetes, 3 = Insulin Dependence, 4 = Death
 		int hospitalized; // 0 = Not Hospitalized, 1 = At Hospital
-		int id;
-		bool hospitalized_before; // 0 = Not hospitalized before, 1 = Hospitalized before
+		int intervention;// 1 = Received phone from hospital, 0 = Not received follow up call
+		int gene;
+		bool diagnosed; // 0 = Not hospitalized before, 1 = Hospitalized before
+		double threshold;
+		double severity;
+		double t;
+		double t_conduct;
+		double t_cum;
 		// Model input port
 		static const int signal_in[2];
 		// Model output port
 		static const int signal_out[2];
-		double t;
 
 	private:
 
 		double tahead;
 		int total;
 		int influence;
-		int memory;
-		double memory_count;
-
-
 };
 
 #endif /* BENE_H_ */

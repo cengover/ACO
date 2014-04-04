@@ -15,8 +15,10 @@ struct Signal
 {
 	int behavior;
 	int health;
+	int insurance;
 	int id;
-	bool hospitalized_before;
+	int intervention;
+	bool diagnosed;
 	double entry_time;
 };
 

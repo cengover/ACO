@@ -13,20 +13,25 @@
 #include <cstdlib>
 #include <map>
 #include <stdlib.h>
+#include <fstream>
+#include <string.h>
+#include <cstring>
+#include <cstdio>
+#include <sstream>
+
 using namespace adevs;
 using namespace std;
 
 //DEFINE PARAMETERS HERE
-const int population = 2;
-const int connections = 1;
-const int numberOfProviders = 1;
-const double bene_signal_rate = 10.0;
-const double provider_service_rate = 5.0;
-const double influence_rate = 0.60;
+int population = 100;
+int connections = 5;
+int numberOfProviders = 1;
+double bene_signal_rate = 1.0;
+double provider_service_rate = 0.5;
 const double termination_time = 100.0;
 
 //std::string str = std::getenv("Seed");
-const unsigned int Seed = 2;//atoi(str.c_str());
+int Seed = 0;//atoi(str.c_str());
 static adevs::rv* rand_str_ptr = new adevs::rv(Seed);
 adevs::rv& rand_strm = *rand_str_ptr;
 
@@ -44,45 +49,65 @@ int main(){
 		cerr << msg << endl;
 		return 0;
 	}
-	// Create the model
-	BeneNetwork* beneN = new BeneNetwork();
-	// Create the simulator
-	Simulator<IO>* sim = new Simulator<IO>(beneN);
-	// Run the simulation
-	while (sim->nextEventTime() <= termination_time){
+	// SCENARIOS
+	ofstream myfile1;
 
-		// Output next event time
-		cout<<sim->nextEventTime()<<endl;
-		list<Provider*>::iterator pro = beneN->providers.begin();
-		for (pro = beneN->providers.begin(); pro != beneN->providers.end(); pro++){
+	stringstream sstm2;
+	sstm2 << "Provider_"<<".txt";
+	string ans1 = sstm2.str();
+	char * ans3 = (char *) ans1.c_str();
+	myfile1.open(ans3);
+	for(connections = 5; connections < 26; connections+=10){
 
-			cout<<"Provider "<<(*pro)->id<<" "<<(*pro)->busy_time<<" "<<(*pro)->distinct_patients<<" "<<(*pro)->t<< endl;
+		for(provider_service_rate = 0.5;provider_service_rate<5;provider_service_rate+=2){
+
+			for(bene_signal_rate = 1.0;bene_signal_rate<12;bene_signal_rate+=5){
+
+				for (Seed = 0; Seed < 30;++Seed){
+
+				// Create the model
+					BeneNetwork* beneN = new BeneNetwork();
+					// Create the simulator
+					Simulator<IO>* sim = new Simulator<IO>(beneN);
+					// Run the simulation
+					while (sim->nextEventTime() <= termination_time){
+
+						// Output next event time
+						//cout<<sim->nextEventTime()<<endl;
+						sim->execNextEvent();
+					}
+					stringstream sstm;
+					sstm << "Bene_"<<population<<"_"<<connections<<"_"<<numberOfProviders<<"_"<<bene_signal_rate
+							<<"_"<<provider_service_rate<<"_"<<Seed<<".txt";
+					string ans = sstm.str();
+					char * ans2 = (char *) ans.c_str();
+
+					ofstream myfile;
+					myfile.open(ans2);
+
+					// Write a header describing the data fields
+					list<Bene*>::iterator bene = beneN->beneficiaries.begin();
+					for (bene = beneN->beneficiaries.begin(); bene != beneN->beneficiaries.end(); bene++){
+
+						myfile<<"Bene "<<(*bene)->id<<" "<<(*bene)->health<<" "<<(*bene)->behavior<<" "<<(*bene)->diagnosed<<" "<<(*bene)->t_cum<< endl;
+					}
+					myfile.close();
+
+					list<Provider*>::iterator pro = beneN->providers.begin();
+					for (pro = beneN->providers.begin(); pro != beneN->providers.end(); pro++){
+
+						cout << "Provider "<<population<<" "<<connections<<" "<<numberOfProviders<<" "<<bene_signal_rate
+								<<" "<<provider_service_rate<<" "<<Seed<<" "<<(*pro)->id<<" "<<(*pro)->busy_time<<" "<<(*pro)->total_patients<<" "<<(*pro)->distinct_patients
+								<<" "<<(*pro)->service_cost<<" "<<(*pro)->intervention_budget<<endl;
+					}
+					// Clean up and exit
+					delete beneN;
+					delete sim;
+				}
+			}
 		}
 
-		list<Bene*>::iterator bene = beneN->beneficiaries.begin();
-		for (bene = beneN->beneficiaries.begin(); bene != beneN->beneficiaries.end(); bene++){
-
-			cout<<"Bene "<<(*bene)->id<<" "<<(*bene)->behavior<<" "<<(*bene)->health<<" "<<(*bene)->hospitalized<<" "<<(*bene)->t<< endl;
-		}
-
-		sim->execNextEvent();
 	}
-
-	// Print out outcome measures at termination
-	if (sim->nextEventTime() > 100){
-
-		list<Provider*>::iterator pro = beneN->providers.begin();
-		for (pro = beneN->providers.begin(); pro != beneN->providers.end(); pro++){
-
-			cout << "Provider "<< (*pro)->id<< " total busy time is "<<(*pro)->busy_time<< endl;
-			cout << "Provider "<< (*pro)->id<< " total patients who are served is "<<(*pro)->total_patients<<endl;
-			cout << "Provider "<<(*pro)->id<< " distinct patients who are served is "<<(*pro)->distinct_patients<<endl;
-		}
-		cout << "Total number of visits is "<< beneN->payer[0]->total_number_of_patients<< endl;
-	}
-
-	// Clean up and exit
-	delete beneN;
-	delete sim;
+	myfile1.close();
 	return 0;
 }

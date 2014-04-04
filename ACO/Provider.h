@@ -37,6 +37,8 @@ class Provider: public adevs::Atomic<IO>
 		int id;
 		double t;
 		double busy_time;
+		double service_cost;
+		double intervention_budget;
 		int total_patients;
 		int distinct_patients;
 		std::list<Signal*> patients;

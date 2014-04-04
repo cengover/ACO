@@ -10,11 +10,11 @@ total=0
 for ((run=1 ; run <= 30 ; run++))
 do
 	total=$(($total+1))
-	echo $total
+	//echo $total
 	export Seed=$run
         make clean
         make abm
-	./abm $run  > abm-$total.txt
+	./abm $run  #> abm-$total.txt
 done
 #done
 

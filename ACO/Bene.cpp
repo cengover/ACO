@@ -34,16 +34,21 @@ Bene::Bene():Atomic<IO>(){
 
 	t = 0;
 	tahead = get_signal_time();
+	t_conduct = 0;
+	t_cum = 0;
 	insurance = get_binary();
 	behavior = get_binary();
 	health = get_binary();
+	gene = get_binary();
 	hospitalized = 0;
+	intervention = 0;
 	id = 0;
 	total = 1;
 	influence = 1;
-	memory = 0;
-	memory_count = ceil(get_uniform(1.0,5.0)-0.5);
-	hospitalized_before = false;
+	threshold = get_uniform(0.0,0.05);
+	// initialize severity
+	severity = 0.2*gene+0.2*behavior+0.2*intervention+0.2*health*0.25; //+0.20*t_cum/t;
+	diagnosed = false;
 }
 
 /// Internal transition function.
@@ -52,28 +57,32 @@ void Bene::delta_int(){
 	t += tahead;
 	tahead = get_signal_time();
 	if (this->hospitalized == 0){
-
+		// Change Behavior
 		double temp = get_uniform(0.0,1.0);
 		if (temp<=(influence/total)){
 
-			behavior = 1;
+			if (behavior != 1){
+
+				behavior = 1;
+				t_conduct = t;
+			}
 
 		}
 		else if (temp>(influence/total)){
 
-			behavior = 0;
+			if (behavior != 0){
+
+				behavior = 0;
+				t_cum = t_cum + (t-t_conduct);
+				t_conduct = 0;
+			}
 		}
 
-		if ((influence/total)< influence_rate){
+		//cout<<severity<<endl;
+		// Update Severity
+		if (t_conduct != 0 && t_cum > 0){
 
-			memory+=1;
-		}
-
-		if (memory > memory_count){
-
-			memory = 0;
-			// get sick
-			health = 1;
+			severity = 0.2*gene+0.2*behavior+0.2*intervention+0.20*health*0.25+0.20*(t-t_conduct)/t_cum;
 		}
 
 	}
@@ -88,9 +97,14 @@ void Bene::delta_ext(double e, const adevs::Bag<IO>& xb){
 		// If the bene comes back from a provider
 		if ((*i).port == 1 && hospitalized == 1&&(*i).value->id == this->id){
 
-			health = 0;
+			if (health == 1){
+
+				health = 0;
+
+			}
 			hospitalized = 0;
-			hospitalized_before = true;
+			diagnosed = true;
+			intervention = (*i).value->intervention;
 		}
 		// If the bene receives a signal from another bene
 		else if ((*i).port == 0 && hospitalized != 1) {
@@ -125,13 +139,30 @@ void Bene::output_func(adevs::Bag<IO>& yb){
 	sig->behavior = behavior;
 	sig->id = id;
 	sig->entry_time = 0;
-	sig->hospitalized_before = hospitalized_before;
+	sig->diagnosed = diagnosed;
+	sig->insurance = insurance;
+	// Here we assign state transitions
+	if (severity > threshold + 0.1*health){
 
-	if (this->health == 1){
+		intervention = 0;
+		if (health != 4){
 
-		hospitalized = 1;
-		IO output(signal_out[1],sig);
-		yb.insert(output);
+			health = health + 1;
+		}
+
+		if (insurance == 1){
+
+			hospitalized = 1;
+			IO output(signal_out[1],sig);
+			yb.insert(output);
+		}
+
+		else if (insurance ==0 && get_uniform(0.0,1.0)<0.5) {
+
+			hospitalized = 1;
+			IO output(signal_out[1],sig);
+			yb.insert(output);
+		}
 	}
 	else {
 
