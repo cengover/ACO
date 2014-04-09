@@ -10,6 +10,7 @@
 
 #include "adevs.h"
 #include "config.h"
+#include <list>
 #include <vector>
 
 class Provider: public adevs::Atomic<IO>
@@ -29,12 +30,20 @@ class Provider: public adevs::Atomic<IO>
 		double ta();
 		/// Output value garbage collection.
 		void gc_output(adevs::Bag<IO>& g);
+		/// To output a signal, create one
+		Signal* create_signal();
+		/// To discharge serviced patient
+		void discharge(Provider* p);
 		int id;
 		double t;
 		double busy_time;
+		double service_cost;
+		double intervention_budget;
 		int total_patients;
 		int distinct_patients;
-		std::vector<Signal*> patients;
+		//int resources;
+		//std::list<Signal*> in_service;
+		std::list<Signal*> patients;
 		static const int signal_in;
 		static const int signal_out;
 		static const int observer_out;
@@ -42,4 +51,5 @@ class Provider: public adevs::Atomic<IO>
 
 		double tahead;
 };
+
 #endif /* PROVIDER_H_ */

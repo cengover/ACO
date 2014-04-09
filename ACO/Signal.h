@@ -13,11 +13,14 @@ Signal that is used as a PortValue
 */
 struct Signal
 {
-	int state;
-	int health_status;
+	int behavior;
+	int health;
+	int insurance;
 	int id;
-	bool serviced_before;
-	double service_time;
+	int intervention;
+	bool diagnosed;
+	double entry_time;
+	double service_duration;
 };
 
 /// Create an abbreviation for the Clerk's input/output type.

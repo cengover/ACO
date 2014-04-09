@@ -7,7 +7,8 @@
 #include "Bene.h"
 #include "BeneNetwork.h"
 #include "Provider.h"
-#include "Observer.h"
+#include "Payer.h"
+#include <iterator>
 
 using namespace adevs;
 using namespace std;
@@ -24,33 +25,78 @@ BeneNetwork::BeneNetwork():Digraph<Signal*>() // call the parent constructor
 	// Add the initial objects to the network - Providers and Beneficiaries
 	add_provider();
 	add_bene();
-	Observer* obsrv = new Observer();
+	Payer* obsrv = new Payer();
 	add(obsrv);
-	observer.push_back(obsrv);
+	payer.push_back(obsrv);
 
 	// Connect Digraph here
-	for (int i = 0; i< population; i++){
+	list<Bene*>::iterator src = beneficiaries.begin();
+	list<Bene*>::iterator tgt = beneficiaries.begin();
+	list<Provider*>::iterator prit = providers.begin();
+	std::vector<int> ids(connections);
 
-		Bene* src = beneficiaries[i];
-		Bene* tgt = new Bene();
-		for (int j = 0; j < connections; j++)
-		{
-			int inx;
-			inx = get_member(population);
-			while (inx == i){
-				inx = get_member(population);
+	for (src = beneficiaries.begin(); src != beneficiaries.end(); src++){
+
+
+		std::fill (ids.begin(),ids.end(),-1);
+		bool check = false;
+
+		// Connect Benes
+		for (int j = 0; j < connections; j++){
+
+			int inx = get_member(population);
+			ids[j] = inx;
+			tgt = beneficiaries.begin();
+			std::advance(tgt,inx);
+			for (int n = 0; n < j; n++){
+
+				if(ids[n] == inx){
+
+					check = true;
+					break;
+				}
 			}
-			tgt = beneficiaries[inx];
-			couple(src,src->signal_out[0],tgt,tgt->signal_in[0]);
+			if((*src)->id == (*tgt)->id){
+
+				check = true;
+			}
+
+			while (check == true){
+
+				check = false;
+				inx = get_member(population);
+				ids[j] = inx;
+				tgt = beneficiaries.begin();
+				std::advance(tgt,inx);
+				for (int n = 0; n < j; n++){
+
+					if(ids[n] == inx){
+
+						check = true;
+						break;
+					}
+
+				}
+				if((*src)->id == (*tgt)->id){
+
+					check = true;
+				}
+			}
+
+			couple((*src),(*src)->signal_out[0],(*tgt),(*tgt)->signal_in[0]);
 		}
-		int provider = get_member(numberOfProviders);
-		couple(src,src->signal_out[1],providers[provider],providers[provider]->signal_in);
-		couple(providers[provider],providers[provider]->signal_out,src,src->signal_in[1]);
+			// Connect Providers and Beneficiaries here!
+			int provider = get_member(numberOfProviders);
+			prit = providers.begin();
+			std::advance(prit,provider);
+
+			couple((*src),(*src)->signal_out[1],(*prit),(*prit)->signal_in);
+			couple((*prit),(*prit)->signal_out,(*src),(*src)->signal_in[1]);
 	}
 	// Connect Providers and Observer
-	for (int i = 0; i< numberOfProviders; i++){
+	for (prit = providers.begin(); prit != providers.end(); prit++){
 
-		couple(providers[i],providers[i]->observer_out, obsrv, obsrv->output_port);
+		couple((*prit),(*prit)->observer_out, obsrv, obsrv->output_port);
 	}
 }
 
@@ -60,8 +106,8 @@ void BeneNetwork::add_bene() {
 	for (int i = 0; i < population;i++){
 
 		Bene* bene = new Bene();
-		add(bene);
 		bene->id = i;
+		add(bene);
 		beneficiaries.push_back(bene);
 	}
 }
@@ -72,8 +118,8 @@ void BeneNetwork::add_provider() {
 	for (int i = 0; i < numberOfProviders;i++){
 
 		Provider* pro = new Provider();
-		add(pro);
 		pro->id = i;
+		add(pro);
 		providers.push_back(pro);
 	}
 }

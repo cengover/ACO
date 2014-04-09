@@ -11,7 +11,8 @@
 #include "Bene.h"
 #include "config.h"
 #include "Provider.h"
-#include "Observer.h"
+#include "Payer.h"
+#include <list>
 #include <vector>
 
 /**
@@ -23,14 +24,14 @@ class BeneNetwork: public adevs::Digraph<Signal*> {
 		// Get the number of benes
 		int getBeneCount();
 		// This is for the bene set
-		std::vector<Bene*> beneficiaries;
+		std::list<Bene*> beneficiaries;
 		// This is for the bene set
-		std::vector<Provider*> providers;
-		std::vector<Observer*> observer;
+		std::list<Provider*> providers;
+		std::vector<Payer*> payer;
 	private:
-		// Method for adding a bene to the network
+		// Method for adding a benes to the network
 		void add_bene();
-		// Method for adding a bene to the network
+		// Method for adding a providers to the network
 		void add_provider();
 
 };

@@ -13,8 +13,8 @@ do
 	echo $total
 	export Seed=$run
         make clean
-        make
-	./abm $run  > abm-$total.txt
+        make abm
+	./abm $run  #> abm-$total.txt
 done
 #done
 

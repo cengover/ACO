@@ -12,12 +12,16 @@
 
 // Parameters that are used in main() method
 extern adevs::rv& rand_strm;
-extern const int population;
-extern const int connections;
-extern const int numberOfProviders;
-extern const double bene_signal_rate;
-extern const double provider_service_rate;
-extern const double memory_count;
-extern const double influence_rate;
+extern int population;
+extern int connections;
+extern int numberOfProviders;
+extern const double w_health_for_threshold;
+extern const int factors_progression;
+extern const double weights_in_progression[];
+extern const int capacity;
+extern double bene_signal_rate;
+extern double provider_service_rate;
+extern const double termination_time;
+extern const string path;
 
 #endif /* CONFIG_H_ */
