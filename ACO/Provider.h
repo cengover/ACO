@@ -41,6 +41,8 @@ class Provider: public adevs::Atomic<IO>
 		double intervention_budget;
 		int total_patients;
 		int distinct_patients;
+		//int resources;
+		//std::list<Signal*> in_service;
 		std::list<Signal*> patients;
 		static const int signal_in;
 		static const int signal_out;

@@ -20,6 +20,7 @@ struct Signal
 	int intervention;
 	bool diagnosed;
 	double entry_time;
+	double service_duration;
 };
 
 /// Create an abbreviation for the Clerk's input/output type.

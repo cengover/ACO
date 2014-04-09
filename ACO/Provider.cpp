@@ -33,15 +33,13 @@ Signal* Provider::create_signal(){
 
 	Signal* sig = new Signal();
 	list<Signal*>::iterator iter = patients.begin();
-	Signal* b = new Signal();
-	b = *iter;
 	/// Add Output Signal Values
-	sig->id = b->id;
-	sig->health= 0;
+	sig->id = (*iter)->id;
+	sig->health=0;
 	sig->behavior = 0;
 	sig->intervention = get_binary();
 
-	/////////////////////////// Intervention budget is incremented
+	///Intervention budget is incremented
 	if (sig->intervention ==1){
 
 		this->intervention_budget += 0.1;
@@ -60,6 +58,7 @@ void Provider::discharge(Provider* p){
 	p->total_patients+=1;
 	p->service_cost += (*iter)->health*((*iter)->insurance+1);
 	p->busy_time+=(p->t-(*iter)->entry_time);
+	cout<<p->t<<" "<<(*iter)->id<<" Discharge"<<endl;
 	p->patients.erase(p->patients.begin());
 	if (p->patients.size()>0){
 
@@ -74,8 +73,8 @@ Provider::Provider():Atomic<IO>(){
 	t = 0;
 	tahead = 0;
 	id = 0;
-	total_patients = 0;
 	busy_time = 0;
+	total_patients = 0;
 	distinct_patients = 0;
 	service_cost = 0;
 	intervention_budget = 0;
@@ -84,11 +83,7 @@ Provider::Provider():Atomic<IO>(){
 /// Internal transition function.
 void Provider::delta_int(){
 
-	// If there are not any patients waiting, do not delete
-	if (patients.size()>0){
-
-		tahead = get_visit_time();
-	}
+	// Nothing for now
 }
 
 /// External transition function.
@@ -98,16 +93,23 @@ void Provider::delta_ext(double e, const adevs::Bag<IO>& xb){
 	Bag<IO>::const_iterator i;
 	for (i = xb.begin(); i != xb.end(); i++){
 
+		// System entry time is recorded
 		(*i).value->entry_time = t;
+		(*i).value->service_duration = get_visit_time();
+		// Add the patient to the list of patients
 		patients.push_back((*i).value);
+		cout<<t<<" "<<(*i).value->id<<" "<<(*i).value->service_duration<<" IN "<<endl;
 	}
-	if (e >= tahead){
+	if (e > tahead){
 
-		tahead = get_visit_time();
+		Signal* s = new Signal();
+		list<Signal*>::iterator sig = patients.begin();
+		s = (*sig);
+		tahead = s->service_duration;
 	}
 	else{
 
-		tahead = ta()-e;
+		tahead = tahead-e;
 	}
 }
 
@@ -127,10 +129,20 @@ void Provider::output_func(adevs::Bag<IO>& yb){
 	yb.insert(output);
 	IO output1(observer_out, sig);
 	yb.insert(output1);
+	t += tahead;
 	// Remove the discharged bene
-	t += ta();
 	discharge(this);
+	if (patients.size() > 0){
 
+		Signal* s = new Signal();
+		list<Signal*>::iterator si = patients.begin();
+		s = (*si);
+		tahead = s->service_duration;
+	}
+	else {
+
+		tahead = 0;
+	}
 }
 
 /// Time advance function.
@@ -143,6 +155,7 @@ double Provider::ta(){
 	else{
 
 		return tahead;
+
 	}
 }
 

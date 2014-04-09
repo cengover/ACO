@@ -26,6 +26,8 @@ class Bene: public adevs::Atomic<IO>
 		double ta();
 		/// Output value garbage collection.
 		void gc_output(adevs::Bag<IO>& g);
+		/// Update Progression
+		void update_progression();
 		int id;
 		int insurance; // 0 = Exist, 1 = Not-exist
 		int behavior; // 0 = Un-Healthy, 1 = Healthy
@@ -34,8 +36,6 @@ class Bene: public adevs::Atomic<IO>
 		int intervention;// 1 = Received phone from hospital, 0 = Not received follow up call
 		int gene;
 		bool diagnosed; // 0 = Not hospitalized before, 1 = Hospitalized before
-		double threshold;
-		double severity;
 		double t;
 		double t_conduct;
 		double t_cum;
@@ -49,6 +49,9 @@ class Bene: public adevs::Atomic<IO>
 		double tahead;
 		int total;
 		int influence;
+		double threshold;
+		double progression;
+		double risk_aversion;
 };
 
 #endif /* BENE_H_ */

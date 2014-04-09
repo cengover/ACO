@@ -15,8 +15,13 @@ extern adevs::rv& rand_strm;
 extern int population;
 extern int connections;
 extern int numberOfProviders;
+extern const double w_health_for_threshold;
+extern const int factors_progression;
+extern const double weights_in_progression[];
+extern const int capacity;
 extern double bene_signal_rate;
 extern double provider_service_rate;
 extern const double termination_time;
+extern const string path;
 
 #endif /* CONFIG_H_ */
