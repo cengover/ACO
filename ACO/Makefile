@@ -6,14 +6,14 @@ LIBS = -L${HOME}/adevs-code/src -ladevs
 .cpp.o:
 	${CXX} ${CFLAGS} -o $@ -c $<
 
-all:Bene.o \
-BeneNetwork.o \
-main.o \
+all:BeneNetwork.o \
+Bene.o \
 Provider.o \
-Payer.o
+Payer.o \
+main.o \
 
-abm: all main.o
-	${CXX} ${CFLAGS} main.o Bene.o BeneNetwork.o Provider.o Payer.o ${LIBS} -o abm
+abm: all
+	${CXX} ${CFLAGS} main.o BeneNetwork.o Provider.o Bene.o Payer.o ${LIBS} -o abm
 
 clean:
 	rm -f *.o abm

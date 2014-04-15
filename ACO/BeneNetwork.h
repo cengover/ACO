@@ -21,11 +21,9 @@
 class BeneNetwork: public adevs::Digraph<Signal*> {
 	public:
 		BeneNetwork();
-		// Get the number of benes
-		int getBeneCount();
 		// This is for the bene set
 		std::list<Bene*> beneficiaries;
-		// This is for the bene set
+		// This is for the provider set
 		std::list<Provider*> providers;
 		std::vector<Payer*> payer;
 	private:
@@ -33,6 +31,10 @@ class BeneNetwork: public adevs::Digraph<Signal*> {
 		void add_bene();
 		// Method for adding a providers to the network
 		void add_provider();
+		// Method for connecting DiGraph' s all components
+		void random_connect();
+		// Method for connecting benes
+		void connect_providers(Bene* src);
 
 };
 

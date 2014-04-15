@@ -11,10 +11,6 @@
 using namespace std;
 using namespace adevs;
 
-// Assign identifiers to I/O ports
-const int Bene::signal_in[2] = {0,1};
-const int Bene::signal_out[2]= {0,1};
-
 static double get_signal_time(){
 
 	return rand_strm.exponential(bene_signal_rate);
@@ -38,6 +34,8 @@ Bene::Bene():Atomic<IO>(){
 	tahead = get_signal_time();
 	t_conduct = 0;
 	t_cum = 0;
+	t_hospital = 0;
+	t_queue = 0;
 	insurance = get_binary();
 	behavior = get_binary();
 	health = get_binary();
@@ -86,11 +84,11 @@ void Bene::delta_int(){
 void Bene::delta_ext(double e, const adevs::Bag<IO>& xb){
 
 	t += e;
+	tahead = ta()-e;
 	Bag<IO>::const_iterator i;
 	for (i = xb.begin(); i != xb.end(); i++){
-
 		// If the bene comes back from a provider
-		if ((*i).port == 1 && hospitalized == 1&&(*i).value->id == this->id){
+		if ((*i).value->from_provider == 1 && id ==(*i).value->id){
 
 			tahead = get_signal_time();
 			if (health == 1){
@@ -100,17 +98,13 @@ void Bene::delta_ext(double e, const adevs::Bag<IO>& xb){
 			hospitalized = 0;
 			diagnosed = true;
 			intervention = (*i).value->intervention;
+			t_hospital = t_hospital + (t - (*i).value->entry_time);
+			t_queue = t_queue + (*i).value->t_queue;
 		}
 		// If the bene receives a signal from another bene
-		else if ((*i).port == 0 && hospitalized != 1) {
-
+		else if ((*i).value->from_bene == 1) {
 			influence += (*i).value->behavior;
 			total += 1;
-			tahead = ta()-e;
-		}
-		else if ((*i).port == 1 && (*i).value->id != this->id){
-
-			tahead = ta()-e;
 		}
 	}
 }
@@ -126,11 +120,11 @@ void Bene::delta_conf(const adevs::Bag<IO>& xb){
 void Bene::output_func(adevs::Bag<IO>& yb){
 
 	t += tahead;
+	// create signal
 	Signal* sig = new Signal();
 	sig->health = health;
 	sig->behavior = behavior;
 	sig->id = id;
-	sig->entry_time = 0;
 	sig->diagnosed = diagnosed;
 	sig->insurance = insurance;
 	// Here we assign state transitions
@@ -143,27 +137,40 @@ void Bene::output_func(adevs::Bag<IO>& yb){
 			health = health + 1;
 			sig->health = health;
 		}
+		vector<int>::iterator s  = signal_to_provider.begin();
 		if (insurance == 1){
 
+			sig->to_provider = 1; // to provider
 			hospitalized = 1;
-			IO output(signal_out[1],sig);
+			IO output((*s),sig);
 			yb.insert(output);
+			//cout<<t<<" "<<id<<" "<<hospitalized<<" Insured"<<endl;
 		}
 		// After we add self-efficacy, we will change the condition
-		else if (insurance ==0 && get_uniform(0.0,1.0)>risk_aversion) {
+		else if (insurance ==0 && get_uniform(0.0,1.0)>risk_aversion){
 
+			sig->to_provider = 1; // to provider
 			hospitalized = 1;
-			IO output(signal_out[1],sig);
+			IO output((*s),sig);
 			yb.insert(output);
+			//cout<<t<<" "<<id<<" "<<hospitalized<<endl;
 		}
 
-		cout<<t<<" "<<id<<" "<<hospitalized<<endl;
 		tahead = 0;
 	}
+	// Here interact with other agents
 	else {
 
-		IO output(signal_out[0],sig);
-		yb.insert(output);
+		sig->from_bene = 1; // from bene
+
+		vector<int>::iterator b  = this->signal_to_bene.begin();
+
+		for(;b!=signal_to_bene.end();b++){
+
+			//cout<<t<<" "<<id<<" - >"<<(*b)<<endl;
+			IO output((*b),sig);
+			yb.insert(output);
+		}
 		tahead = get_signal_time();
 	}
 }
@@ -184,6 +191,8 @@ double Bene::ta(){
 /// Output value garbage collection.
 void Bene::gc_output(adevs::Bag<IO>& g){
 };
+
+/// Update progression
 void Bene::update_progression(){
 
 	if (t_conduct != 0 && t_cum > 0){

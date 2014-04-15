@@ -9,6 +9,7 @@
 #include "Bene.h"
 #include "Signal.h"
 #include "config.h"
+#include "clock.h"
 #include <iostream>
 #include <cstdlib>
 #include <map>
@@ -18,26 +19,43 @@
 #include <cstring>
 #include <cstdio>
 #include <sstream>
+#include "sys/types.h"
+#include "sys/sysinfo.h"
 
 using namespace adevs;
 using namespace std;
 
 //DEFINE PARAMETERS HERE
-int population = 3;
-int connections = 1;
+// Output path
+const string path = "/home/ozgur/Desktop/Data/";
+const double termination_time = 200.0;
+int population = 200;
 int numberOfProviders = 1;
+
+ /*
+int Seed = 1;
+int connections = 2;
 double bene_signal_rate = 5.0;
-double provider_service_rate = 10.0;
-const double termination_time = 100.0;
-const int capacity = 1;
+double provider_service_rate = 1.0;
+ */
+
+const int capacity = 1; // To be changed after adding multiple servers/doctors
 const double w_health_for_threshold = 0.2;
 const int factors_progression = 5;
 const double weights_in_progression[factors_progression] = {0.2,0.2,0.2,0.2,0.2};
-const string path = "/home/ozi/Desktop/Data/";
 
-// Random number seed assignment
-//std::string str = std::getenv("Seed");
-int Seed = 0;//atoi(str.c_str());
+// Environmental variables to use in scenarios (in run-abm.sh)
+// /*
+std::string str = std::getenv("Seed");
+int Seed = atoi(str.c_str());
+std::string str1 = std::getenv("connections");
+int connections = atoi(str1.c_str());
+std::string str2 = std::getenv("bene_signal_rate");
+double bene_signal_rate = atoi(str2.c_str());
+std::string str3 = std::getenv("provider_service_rate");
+double provider_service_rate = atoi(str3.c_str());
+// */
+// Assign Ransom Number Seed
 static adevs::rv* rand_str_ptr = new adevs::rv(Seed);
 adevs::rv& rand_strm = *rand_str_ptr;
 
@@ -62,8 +80,8 @@ void output_bene(BeneNetwork* beneN){
 		for (bene = beneN->beneficiaries.begin(); bene != beneN->beneficiaries.end(); bene++){
 
 			bene_output<<"Bene "<<population<<" "<<connections<<" "<<numberOfProviders<<" "<<bene_signal_rate
-					<<" "<<provider_service_rate<<" "<<Seed<<" "<<(*bene)->id<<" "<<(*bene)->health<<" "<<(*bene)->behavior<<" "<<(*bene)->diagnosed<<" "
-			<<(*bene)->t_cum<< endl;
+					<<" "<<provider_service_rate<<" "<<Seed<<" "<<(*bene)->id<<" "<<(*bene)->health<<" "<<(*bene)->behavior<<
+					" "<<(*bene)->diagnosed<<" "<<(*bene)->t_cum<<" "<<" "<<(*bene)->t_queue<<" "<<(*bene)->t_hospital<<endl;
 	}
 	bene_output.close();
 }
@@ -117,44 +135,34 @@ int main(){
 
 		return 0;
 	}
-	// Measure the elapsed time
-	clock_t begin = clock();
 
-	// SCENARIOS
-	//for(connections = 1; connections < 26; connections+=5){
+	// Record the start of elapsed time
+	double cpu_begin = get_cpu_time();
+	double wall_begin = get_wall_time();
+	// Create the model
+	BeneNetwork* beneN = new BeneNetwork();
+	// Create the simulator
+	Simulator<IO>* sim = new Simulator<IO>(beneN);
+	// Run the simulation
+	while (sim->nextEventTime() <= termination_time){
 
-		//for(provider_service_rate = 0.0;provider_service_rate<10.0;provider_service_rate+=2){
+		// Output next event time
+		//cout<<sim->nextEventTime()<<endl;
+		sim->execNextEvent();
+	}
 
-			//for(bene_signal_rate = 1.0;bene_signal_rate<10.0;bene_signal_rate+=2){
-
-				//for (Seed = 1; Seed < 31;++Seed){
-
-					// Create the model
-					BeneNetwork* beneN = new BeneNetwork();
-					// Create the simulator
-					Simulator<IO>* sim = new Simulator<IO>(beneN);
-					// Run the simulation
-					while (sim->nextEventTime() <= termination_time){
-
-						// Output next event time
-						cout<<sim->nextEventTime()<<endl;
-						sim->execNextEvent();
-					}
-					// Bene output for each scenario and replication
-					output_bene(beneN);
-					// Provider output for each scenario and replication
-					output_provider(beneN);
-					// Clean up and exit
-					delete beneN;
-					delete sim;
-				//}
-			//}
-		//}
-	//}
-
-	clock_t end = clock();
-	double elapsed_secs = double(end - begin)/ CLOCKS_PER_SEC;
-	cout<<elapsed_secs<<endl;
+	// Bene output for each scenario and replication
+	output_bene(beneN);
+	// Provider output for each scenario and replication
+	output_provider(beneN);
+	// Clean up and exit
+	delete beneN;
+	delete sim;
+	// Record the end of elapsed time
+	double cpu_end = get_cpu_time();
+	double wall_end = get_wall_time();
+	cout << "Real Time = " << wall_end - wall_begin << endl;
+	cout << "CPU Time  = " << cpu_end  - cpu_begin  << endl;
 	return 0;
 }
 

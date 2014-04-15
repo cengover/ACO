@@ -11,7 +11,6 @@
 #include "adevs.h"
 #include "config.h"
 #include <list>
-#include <vector>
 
 class Provider: public adevs::Atomic<IO>
 {
@@ -44,9 +43,9 @@ class Provider: public adevs::Atomic<IO>
 		//int resources;
 		//std::list<Signal*> in_service;
 		std::list<Signal*> patients;
-		static const int signal_in;
-		static const int signal_out;
-		static const int observer_out;
+		std::vector<int>  signal_in;
+		std::vector<int> signal_out;
+		static const int payer_out;
 	private:
 
 		double tahead;

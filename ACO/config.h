@@ -12,6 +12,7 @@
 
 // Parameters that are used in main() method
 extern adevs::rv& rand_strm;
+extern int Seed;
 extern int population;
 extern int connections;
 extern int numberOfProviders;
