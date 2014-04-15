@@ -8,6 +8,9 @@
 #define bene_h_
 #include "adevs.h"
 #include "config.h"
+#include "Provider.h"
+#include <list>
+#include <vector>
 
 class Bene: public adevs::Atomic<IO>
 {
@@ -39,10 +42,15 @@ class Bene: public adevs::Atomic<IO>
 		double t;
 		double t_conduct;
 		double t_cum;
+		double t_hospital;
+		double t_queue;
 		// Model input port
-		static const int signal_in[2];
+		std::vector<int> signal_from_bene;
+		std::vector<int> signal_from_provider;
 		// Model output port
-		static const int signal_out[2];
+		std::vector<int> signal_to_bene;
+		std::vector<int> signal_to_provider;
+		static std::list<Provider*> providers;
 
 	private:
 

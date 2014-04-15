@@ -1,20 +1,28 @@
 #!/bin/bash
 total=0
-#for ((en=18 ; en <= 20 ; en++))
-#do
-#	t=`echo "$en*1" | bc -l`
-#	echo $t
-#	sed "s/const double EncounterRate = 4.0;/const double EncounterRate 
-#= $t;/g" abmparse.txt > abm.cpp
-
-for ((run=1 ; run <= 30 ; run++))
+for((c = 1; c <= 26; c+=3))
 do
-	total=$(($total+1))
-	//echo $total
-	export Seed=$run
-        make clean
-        make abm
-	./abm $run  #> abm-$total.txt
+	for((p = 0; p<=10; p+=1))
+	do
+		for((b = 1; b<=10; b+=1))
+		do
+			for ((run = 1; run <= 30;++run))
+			do
+				total=$(($total+1))
+				echo $total
+				export Seed=$run
+				export connections=$c
+				export provider_service_rate=$p
+				export bene_signal_rate=$b
+        			#make clean
+        			make abm
+				./abm  #> abm-$total.txt
 done
-#done
+done
+done
+done
+#t=`echo "$en*1" | bc -l`
+#echo $t
+#sed "s/const double EncounterRate = 4.0;/const double EncounterRate
+#= $t;/g" abmparse.txt > abm.cpp
 
