@@ -28,8 +28,8 @@ using namespace std;
 //DEFINE PARAMETERS HERE
 // Output path
 const string path = "/home/ozgur/Desktop/Data/";
-const double termination_time = 200.0;
-int population = 200;
+const double termination_time = 100.0;
+int population = 3;
 int numberOfProviders = 1;
 
  /*
