@@ -33,6 +33,11 @@ class Provider: public adevs::Atomic<IO>
 		Signal* create_signal();
 		/// To discharge serviced patient
 		void discharge(Provider* p);
+		/// Lookahead
+		double lookahead(){
+
+			return t_lookahead;
+		}
 		int id;
 		double t;
 		double busy_time;

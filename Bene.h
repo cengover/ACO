@@ -31,6 +31,11 @@ class Bene: public adevs::Atomic<IO>
 		void gc_output(adevs::Bag<IO>& g);
 		/// Update Progression
 		void update_progression();
+		/// Lookahead
+		double lookahead(){
+
+			return t_lookahead;
+		}
 		int id;
 		int insurance; // 0 = Exist, 1 = Not-exist
 		int behavior; // 0 = Un-Healthy, 1 = Healthy

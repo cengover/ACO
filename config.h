@@ -20,9 +20,11 @@ extern const double w_health_for_threshold;
 extern const int factors_progression;
 extern const double weights_in_progression[];
 extern const int capacity;
+extern const bool par;
 extern double bene_signal_rate;
 extern double provider_service_rate;
 extern const double termination_time;
+extern const double t_lookahead;
 extern const string path;
 
 #endif /* CONFIG_H_ */

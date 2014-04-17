@@ -36,6 +36,10 @@ class Payer: public adevs::Atomic<IO>
 		void gc_output(adevs::Bag<IO>& g);
 		/// Destructor.
 		~Payer();
+		double lookahead(){
+
+			return t_lookahead;
+		}
 		int total_number_of_patients;
 	private:
 		/// File for storing information about departing customers.

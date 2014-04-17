@@ -29,8 +29,10 @@ using namespace std;
 // Output path
 const string path = "/home/ozi/Desktop/Data/";
 const double termination_time = 200.0;
+const bool par = false;
 int population = 200;
 int numberOfProviders = 1;
+
 
  ///*
 int Seed = 1;
@@ -39,6 +41,7 @@ double bene_signal_rate = 5.0;
 double provider_service_rate = 1.0;
  //*/
 
+const double t_lookahead = 5;
 const int capacity = 1; // To be changed after adding multiple servers/doctors
 const double w_health_for_threshold = 0.2;
 const int factors_progression = 5;
@@ -142,14 +145,13 @@ int main(){
 	// Create the model
 	BeneNetwork* beneN = new BeneNetwork();
 	// Create the simulator
-	Simulator<IO>* sim = new Simulator<IO>(beneN);
-	// Run the simulation
-	while (sim->nextEventTime() <= termination_time){
+	ParSimulator<IO>* sim = new ParSimulator<IO>(beneN);
+	//Simulator<IO>* sim = new Simulator<IO>(beneN);
 
-		// Output next event time
-		//cout<<sim->nextEventTime()<<endl;
-		sim->execNextEvent();
-	}
+	// Run the simulation
+	// Output next event time
+	//cout<<sim->nextEventTime()<<endl;
+	sim->execUntil(termination_time);
 
 	// Bene output for each scenario and replication
 	output_bene(beneN);

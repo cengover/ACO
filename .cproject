@@ -23,6 +23,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.296404496" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 								<option id="gnu.cpp.compiler.option.include.paths.1091745977" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/home/ozi/adevs-code/include"/>
+									<listOptionValue builtIn="false" value="/home/ozi/adevs-code/src"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1820887181" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -38,7 +39,7 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.base.1400396634" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
 								<option id="gnu.both.asm.option.include.paths.1187770432" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="/home/ozi/adevs-code/include"/>
+									<listOptionValue builtIn="false" value="/home/ozi/adevs-code/src"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1769556139" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>

@@ -26,6 +26,8 @@ class BeneNetwork: public adevs::Digraph<Signal*> {
 		// This is for the provider set
 		std::list<Provider*> providers;
 		std::vector<Payer*> payer;
+		// Lookahead
+		double lookahead() { return t_lookahead; }
 	private:
 		// Method for adding a benes to the network
 		void add_bene();
