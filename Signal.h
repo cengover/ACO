@@ -25,6 +25,7 @@ struct Signal
 	int from_bene;
 	int from_provider;
 	int to_provider;
+	int to_payer;
 };
 
 /// Create an abbreviation for the Clerk's input/output type.

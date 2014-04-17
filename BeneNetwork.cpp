@@ -146,8 +146,6 @@ void BeneNetwork::connect_providers(Bene* src){
 	add(obsrv);
 	payer.push_back(obsrv);
 	for (prit = providers.begin(); prit != providers.end(); prit++){
-
 		couple((*prit),(*prit)->payer_out, obsrv, obsrv->output_port);
 	}
-
 }
