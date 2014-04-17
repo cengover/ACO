@@ -1,12 +1,12 @@
 #!/bin/bash
 total=0
-for((c = 1; c <= 26; c+=3))
+for((c = 5; c <= 5; c+=3))
 do
-	for((p = 0; p<=10; p+=1))
+	for((p = 0; p<=10; p+=2))
 	do
-		for((b = 1; b<=10; b+=1))
+		for((b = 1; b<=10; b+=2))
 		do
-			for ((run = 1; run <= 30;++run))
+			for ((run = 1; run <= 10;++run))
 			do
 				total=$(($total+1))
 				echo $total
@@ -15,7 +15,7 @@ do
 				export provider_service_rate=$p
 				export bene_signal_rate=$b
         			#make clean
-        			make abm
+        			#make abm
 				./abm  #> abm-$total.txt
 done
 done

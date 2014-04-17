@@ -28,7 +28,7 @@ static double get_uniform(double a, double b){
 	return rand_strm.uniform(a,b);
 }
 
-//////////////////////////// Construct Benes ///////////////////////////
+
 Bene::Bene():Atomic<IO>(){
 
 	t = 0;
@@ -97,6 +97,7 @@ void Bene::delta_ext(double e, const adevs::Bag<IO>& xb){
 				health = 0;
 			}
 			hospitalized = 0;
+			behavior = 0;
 			diagnosed = true;
 			intervention = (*i).value->intervention;
 			t_hospital = t_hospital + (t - (*i).value->entry_time);
@@ -199,16 +200,15 @@ void Bene::update_progression(){
 	if (t_conduct != 0 && t_cum > 0){
 
 		progression = weights_in_progression[0]*gene+weights_in_progression[1]*behavior
-				+weights_in_progression[2]*intervention+weights_in_progression[3]*health/4+
+				-weights_in_progression[2]*intervention+weights_in_progression[3]*health/4+
 				weights_in_progression[4]*(t-t_conduct)/t_cum;
 	}
 	else{
 
 		progression = weights_in_progression[0]*gene+weights_in_progression[1]*behavior
-				+weights_in_progression[2]*intervention+weights_in_progression[3]*health/4;
+				-weights_in_progression[2]*intervention+weights_in_progression[3]*health/4;
 	}
 
 }
-
 
 

@@ -13,7 +13,7 @@ using namespace adevs;
 /// Assign identifiers to I/O ports
 //Provider::signal_insignal_in = 0;
 //int Provider::signal_out = 1;
-const int Provider::payer_out = 2;
+const int Provider::payer_out = population+1;
 
 /// Get next service duration
 static double get_visit_time(){
@@ -126,7 +126,6 @@ void Provider::output_func(adevs::Bag<IO>& yb){
 	sig = create_signal();
 	vector<int>::iterator it  = this->signal_out.begin();
 	for(;it!=signal_out.end();it++){
-
 		if ((*it) == sig->id){
 
 			IO output((*it), sig);
@@ -134,9 +133,10 @@ void Provider::output_func(adevs::Bag<IO>& yb){
 			break;
 		}
 	}
-	;
-	IO output1(payer_out, sig);
-	yb.insert(output1);
+	// If Payer will be notified
+	// sig->to_payer = 1;
+	// IO output1(payer_out, sig);
+	// yb.insert(output1);
 	t += tahead;
 	// Remove the discharged bene
 	discharge(this);
