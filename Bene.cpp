@@ -103,7 +103,7 @@ void Bene::delta_ext(double e, const adevs::Bag<IO>& xb){
 			t_queue = t_queue + (*i).value->t_queue;
 		}
 		// If the bene receives a signal from another bene
-		else if ((*i).value->from_bene == 1) {
+		else if ((*i).value->from_bene == 1 && hospitalized != 1) {
 			influence += (*i).value->behavior;
 			total += 1;
 		}
@@ -145,6 +145,12 @@ void Bene::output_func(adevs::Bag<IO>& yb){
 			hospitalized = 1;
 			IO output((*s),sig);
 			yb.insert(output);
+			if (behavior != 0){
+
+				behavior = 0;
+				t_cum = t_cum + (t-t_conduct);
+				t_conduct = 0;
+			}
 			//cout<<t<<" "<<id<<" "<<hospitalized<<" Insured"<<endl;
 		}
 		// After we add self-efficacy, we will change the condition
@@ -154,6 +160,12 @@ void Bene::output_func(adevs::Bag<IO>& yb){
 			hospitalized = 1;
 			IO output((*s),sig);
 			yb.insert(output);
+			if (behavior != 0){
+
+				behavior = 0;
+				t_cum = t_cum + (t-t_conduct);
+				t_conduct = 0;
+			}
 			//cout<<t<<" "<<id<<" "<<hospitalized<<endl;
 		}
 

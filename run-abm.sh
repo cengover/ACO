@@ -1,12 +1,12 @@
 #!/bin/bash
 total=0
-for((c = 1; c <= 1; c+=3))
+for((c = 1; c <= 10; c+=1))
 do
-	for((p = 0; p<=1; p+=1))
+	for((p = 0; p<=3; p+=1))
 	do
-		for((b = 1; b<=1; b+=1))
+		for((b = 1; b<=5; b+=1))
 		do
-			for ((run = 1; run <= 1;++run))
+			for ((run = 1; run <= 10;++run))
 			do
 				total=$(($total+1))
 				echo $total
