@@ -30,14 +30,14 @@ using namespace std;
 const string path = "/home/ozi/Desktop/Data/";
 const double termination_time = 200.0;
 int population = 200;
-int numberOfProviders = 1;
+int numberOfProviders = 10;
 
- ///*
+ /*
 int Seed = 1;
 int connections = 2;
 double bene_signal_rate = 5.0;
 double provider_service_rate = 1.0;
- //*/
+ */
 
 const int capacity = 1; // To be changed after adding multiple servers/doctors
 const double w_health_for_threshold = 0.2;
@@ -45,7 +45,7 @@ const int factors_progression = 5;
 const double weights_in_progression[factors_progression] = {0.2,0.2,0.2,0.2,0.2};
 
 // Environmental variables to use in scenarios (in run-abm.sh)
- /*
+///*
 std::string str = std::getenv("Seed");
 int Seed = atoi(str.c_str());
 std::string str1 = std::getenv("connections");
@@ -54,7 +54,7 @@ std::string str2 = std::getenv("bene_signal_rate");
 double bene_signal_rate = atoi(str2.c_str());
 std::string str3 = std::getenv("provider_service_rate");
 double provider_service_rate = atoi(str3.c_str());
- */
+//*/
 // Assign Ransom Number Seed
 static adevs::rv* rand_str_ptr = new adevs::rv(Seed);
 adevs::rv& rand_strm = *rand_str_ptr;

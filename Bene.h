@@ -38,6 +38,10 @@ class Bene: public adevs::Atomic<IO>
 		int hospitalized; // 0 = Not Hospitalized, 1 = At Hospital
 		int intervention;// 1 = Received phone from hospital, 0 = Not received follow up call
 		int gene;
+		int memory;
+		int memory_count;
+		double memory_factor;
+		double tendency;
 		bool diagnosed; // 0 = Not hospitalized before, 1 = Hospitalized before
 		double t;
 		double t_conduct;

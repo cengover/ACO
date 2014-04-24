@@ -48,6 +48,10 @@ Bene::Bene():Atomic<IO>(){
 	influence = 1;
 	threshold = get_uniform(0.0,0.05);
 	risk_aversion = get_uniform(0.0,1.0);
+	memory = 1;
+	memory_count = 0;
+	memory_factor = get_uniform(0.0,0.2);
+	tendency = 0;
 	// initialize progression
 	progression = 0;
 	diagnosed = false;
@@ -59,7 +63,18 @@ void Bene::delta_int(){
 	if (this->hospitalized == 0){
 		// Change Behavior
 		double temp = get_uniform(0.0,1.0);
-		if (temp<=(influence/total)){
+		// Revise the tendency
+		memory_count++;
+		tendency = memory_factor*(influence/total)+(1-memory_factor)*tendency;
+		//cout<<memory_factor<<" FAFAF "<<tendency<<" GFGFGFGF "<<influence<<" Count "<<memory_count<<endl;
+		if (memory_count == memory){
+
+			influence = 1;
+			memory_count = 0;
+			total = 1;
+		}
+
+		if (temp<=tendency){
 
 			if (behavior != 1){
 
@@ -67,7 +82,7 @@ void Bene::delta_int(){
 				t_conduct = t;
 			}
 		}
-		else if (temp>(influence/total)){
+		else if (temp>tendency){
 
 			if (behavior != 0){
 
@@ -104,7 +119,7 @@ void Bene::delta_ext(double e, const adevs::Bag<IO>& xb){
 			t_queue = t_queue + (*i).value->t_queue;
 		}
 		// If the bene receives a signal from another bene
-		else if ((*i).value->from_bene == 1) {
+		else if ((*i).value->from_bene == 1 && hospitalized != 1) {
 			influence += (*i).value->behavior;
 			total += 1;
 		}
@@ -146,6 +161,12 @@ void Bene::output_func(adevs::Bag<IO>& yb){
 			hospitalized = 1;
 			IO output((*s),sig);
 			yb.insert(output);
+			if (behavior != 0){
+
+				behavior = 0;
+				t_cum = t_cum + (t-t_conduct);
+				t_conduct = 0;
+			}
 			//cout<<t<<" "<<id<<" "<<hospitalized<<" Insured"<<endl;
 		}
 		// After we add self-efficacy, we will change the condition
@@ -155,6 +176,12 @@ void Bene::output_func(adevs::Bag<IO>& yb){
 			hospitalized = 1;
 			IO output((*s),sig);
 			yb.insert(output);
+			if (behavior != 0){
+
+				behavior = 0;
+				t_cum = t_cum + (t-t_conduct);
+				t_conduct = 0;
+			}
 			//cout<<t<<" "<<id<<" "<<hospitalized<<endl;
 		}
 
