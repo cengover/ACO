@@ -14,7 +14,7 @@ Signal that is used as a PortValue
 struct Signal
 {
 	int id;
-	int behavior;
+	int lifestyle;
 	int health;
 	int insurance;
 	int intervention;

@@ -11,21 +11,26 @@ using namespace std;
 using namespace adevs;
 
 /// Assign identifiers to I/O ports
-//Provider::signal_insignal_in = 0;
-//int Provider::signal_out = 1;
 const int Provider::payer_out = population+1;
 
 /// Get next service duration
 static double get_visit_time(){
 
 	return rand_strm.exponential(provider_service_rate);
-	//return provider_service_rate;
 }
 
 /// Get binary random variable
-static int get_binary(){
+static int random_process(double rate){
 
-	return ceil(rand_strm.uniform(0.0,1.0)-0.5);
+	double r = rand_strm.uniform(0.0,1.0);
+	if (r < rate){
+
+		return 1;
+	}
+	else{
+
+		return 0;
+	}
 }
 
 /// Create a signal
@@ -35,13 +40,13 @@ Signal* Provider::create_signal(){
 	list<Signal*>::iterator iter = patients.begin();
 	/// Add Output Signal Values
 	sig->id = (*iter)->id;
-	sig->intervention = get_binary();
+	sig->intervention = random_process(intervention_rate);
 	sig->from_provider = 1;
 	sig->service_duration= (*iter)->service_duration;
 	sig->entry_time = (*iter)->entry_time;
 	sig->t_queue = (*iter)->t_queue;
 
-	///Intervention budget is incremented
+	// Intervention budget is incremented
 	if (sig->intervention == 1){
 
 		this->intervention_budget += 0.1;
@@ -60,7 +65,6 @@ void Provider::discharge(Provider* p){
 	p->total_patients+=1;
 	p->service_cost += (*iter)->health*((*iter)->insurance+1);
 	p->busy_time+=(*iter)->service_duration;
-	//cout<<id<<" "<<p->t<<" "<<(*iter)->id<<" Discharge"<<endl;
 	p->patients.erase(p->patients.begin());
 }
 
@@ -98,7 +102,6 @@ void Provider::delta_ext(double e, const adevs::Bag<IO>& xb){
 			(*i).value->t_queue = 0;
 			// Add the patient to the list of patients
 			patients.push_back((*i).value);
-			//cout<<id<< " "<<t<<" "<<(*i).value->id<<" "<<(*i).value->service_duration<<" IN "<<endl;
 		}
 	}
 	if (e > tahead){

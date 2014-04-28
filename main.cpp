@@ -30,31 +30,42 @@ using namespace std;
 const string path = "/home/ozi/Desktop/Data/";
 const double termination_time = 200.0;
 int population = 200;
-int numberOfProviders = 10;
 
- /*
+/*
 int Seed = 1;
+int numberOfProviders = 1;
 int connections = 2;
 double bene_signal_rate = 5.0;
 double provider_service_rate = 1.0;
- */
+double max_threshold = 0.40;
+double medication_period = 10.0;
+double intervention_rate = 0.50;
+*/
 
-const int capacity = 1; // To be changed after adding multiple servers/doctors
 const double w_health_for_threshold = 0.2;
 const int factors_progression = 5;
 const double weights_in_progression[factors_progression] = {0.2,0.2,0.2,0.2,0.2};
 
 // Environmental variables to use in scenarios (in run-abm.sh)
-///*
+
 std::string str = std::getenv("Seed");
 int Seed = atoi(str.c_str());
+std::string str0 = std::getenv("numberOfProviders");
+int numberOfProviders = atoi(str0.c_str());
 std::string str1 = std::getenv("connections");
 int connections = atoi(str1.c_str());
 std::string str2 = std::getenv("bene_signal_rate");
 double bene_signal_rate = atoi(str2.c_str());
 std::string str3 = std::getenv("provider_service_rate");
 double provider_service_rate = atoi(str3.c_str());
-//*/
+std::string str4 = std::getenv("max_threshold");
+double max_threshold = atoi(str4.c_str());
+std::string str5 = std::getenv("medication_period");
+double medication_period = atoi(str5.c_str());
+std::string str6 = std::getenv("intervention_rate");
+double intervention_rate = atoi(str6.c_str());
+
+
 // Assign Ransom Number Seed
 static adevs::rv* rand_str_ptr = new adevs::rv(Seed);
 adevs::rv& rand_strm = *rand_str_ptr;
@@ -65,7 +76,8 @@ char* create_file_name(string name){
 	// Write a header describing the data fields
 	stringstream sstm;
 	sstm << path<< name<< population<<"_"<<connections<<"_"<<numberOfProviders<<"_"<<bene_signal_rate
-				<<"_"<<provider_service_rate<<"_"<<Seed<<".txt";
+				<<"_"<<provider_service_rate<<"_"<<weights_in_progression[4]<<"_"<<max_threshold<<
+				"_"<<medication_period<<"_"<<intervention_rate<<"_"<<Seed<<".txt";
 	string file = sstm.str();
 	char * output = (char *) file.c_str();
 	return output;
@@ -80,7 +92,7 @@ void output_bene(BeneNetwork* beneN){
 		for (bene = beneN->beneficiaries.begin(); bene != beneN->beneficiaries.end(); bene++){
 
 			bene_output<<"Bene "<<population<<" "<<connections<<" "<<numberOfProviders<<" "<<bene_signal_rate
-					<<" "<<provider_service_rate<<" "<<Seed<<" "<<(*bene)->id<<" "<<(*bene)->health<<" "<<(*bene)->behavior<<
+					<<" "<<provider_service_rate<<" "<<Seed<<" "<<(*bene)->id<<" "<<(*bene)->health<<" "<<(*bene)->lifestyle<<
 					" "<<(*bene)->diagnosed<<" "<<(*bene)->t_cum<<" "<<" "<<(*bene)->t_queue<<" "<<(*bene)->t_hospital<<endl;
 	}
 	bene_output.close();
@@ -147,7 +159,6 @@ int main(){
 	while (sim->nextEventTime() <= termination_time){
 
 		// Output next event time
-		//cout<<sim->nextEventTime()<<endl;
 		sim->execNextEvent();
 	}
 
