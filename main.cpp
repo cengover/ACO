@@ -47,7 +47,7 @@ const int factors_progression = 5;
 const double weights_in_progression[factors_progression] = {0.2,0.2,0.2,0.2,0.2};
 
 // Environmental variables to use in scenarios (in run-abm.sh)
-
+///*
 std::string str = std::getenv("Seed");
 int Seed = atoi(str.c_str());
 std::string str0 = std::getenv("numberOfProviders");
@@ -65,8 +65,8 @@ double medication_period = atoi(str5.c_str());
 std::string str6 = std::getenv("intervention_rate");
 double intervention_rate = (double)atof(str6.c_str());
 
-
-// Assign Ransom Number Seed
+//*/
+// Assign Random Number Seed
 static adevs::rv* rand_str_ptr = new adevs::rv(Seed);
 adevs::rv& rand_strm = *rand_str_ptr;
 
@@ -92,7 +92,8 @@ void output_bene(BeneNetwork* beneN){
 		for (bene = beneN->beneficiaries.begin(); bene != beneN->beneficiaries.end(); bene++){
 
 			bene_output<<"Bene "<<population<<" "<<connections<<" "<<numberOfProviders<<" "<<bene_signal_rate
-					<<" "<<provider_service_rate<<" "<<Seed<<" "<<(*bene)->id<<" "<<(*bene)->health<<" "<<(*bene)->lifestyle<<
+					<<" "<<provider_service_rate<<" "<<weights_in_progression[4]<<" "<<max_threshold<<
+					" "<<medication_period<<" "<<intervention_rate<<" "<<Seed<<" "<<(*bene)->id<<" "<<(*bene)->health<<" "<<(*bene)->lifestyle<<
 					" "<<(*bene)->diagnosed<<" "<<(*bene)->t_cum<<" "<<(*bene)->t_queue<<" "<<(*bene)->t_hospital<<endl;
 	}
 	bene_output.close();
@@ -107,7 +108,8 @@ void output_provider(BeneNetwork* beneN){
 	for (pro = beneN->providers.begin(); pro != beneN->providers.end(); pro++){
 
 		pro_output << "Provider "<<population<<" "<<connections<<" "<<numberOfProviders<<" "<<bene_signal_rate
-			<<" "<<provider_service_rate<<" "<<Seed<<" "<<(*pro)->id<<" "<<(*pro)->busy_time<<" "<<(*pro)->total_patients<<" "<<(*pro)->distinct_patients
+			<<" "<<provider_service_rate<<" "<<weights_in_progression[4]<<" "<<max_threshold<<
+			" "<<medication_period<<" "<<intervention_rate<<" "<<Seed<<" "<<(*pro)->id<<" "<<(*pro)->busy_time<<" "<<(*pro)->total_patients<<" "<<(*pro)->distinct_patients
 			<<" "<<(*pro)->service_cost<<" "<<(*pro)->intervention_budget<<endl;
 	}
 	pro_output.close();

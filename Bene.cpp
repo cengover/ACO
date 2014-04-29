@@ -143,6 +143,8 @@ void Bene::output_func(adevs::Bag<IO>& yb){
 	sig->diagnosed = diagnosed;
 	sig->insurance = insurance;
 	// Here we assign state transitions
+	// Update progression
+	update_progression();
 	if (progression > threshold + w_health_for_threshold*health){
 
 		intervention = 0;
