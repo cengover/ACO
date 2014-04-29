@@ -59,11 +59,11 @@ double bene_signal_rate = atoi(str2.c_str());
 std::string str3 = std::getenv("provider_service_rate");
 double provider_service_rate = atoi(str3.c_str());
 std::string str4 = std::getenv("max_threshold");
-double max_threshold = atoi(str4.c_str());
+double max_threshold = (double)atof(str4.c_str());
 std::string str5 = std::getenv("medication_period");
 double medication_period = atoi(str5.c_str());
 std::string str6 = std::getenv("intervention_rate");
-double intervention_rate = atoi(str6.c_str());
+double intervention_rate = (double)atof(str6.c_str());
 
 
 // Assign Ransom Number Seed
@@ -93,7 +93,7 @@ void output_bene(BeneNetwork* beneN){
 
 			bene_output<<"Bene "<<population<<" "<<connections<<" "<<numberOfProviders<<" "<<bene_signal_rate
 					<<" "<<provider_service_rate<<" "<<Seed<<" "<<(*bene)->id<<" "<<(*bene)->health<<" "<<(*bene)->lifestyle<<
-					" "<<(*bene)->diagnosed<<" "<<(*bene)->t_cum<<" "<<" "<<(*bene)->t_queue<<" "<<(*bene)->t_hospital<<endl;
+					" "<<(*bene)->diagnosed<<" "<<(*bene)->t_cum<<" "<<(*bene)->t_queue<<" "<<(*bene)->t_hospital<<endl;
 	}
 	bene_output.close();
 }

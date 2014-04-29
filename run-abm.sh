@@ -1,9 +1,9 @@
 #!/bin/bash
 total=0
-thresholdList=(0.2 0.3 0.4 0.5)
-interventionList=(0.20 0.40 0.60 0.80 1.00)
+thresholdList=(0.2 0.4 0.6)
+interventionList=(0.30 0.60 0.90)
 make abm
-for((c = 1; c <= 20; c+=3))
+for((c = 1; c <= 15; c+=3))
 do
 	for((p = 1; p<=10; p+=4))
 	do
@@ -29,7 +29,7 @@ do
 							export max_threshold=$threshold
 							export medication_period=$med
 							export intervention_rate=$intervention
-        						#make clean
+							#make clean
 							#make abm
 							./abm  #> abm-$total.txt
 done
