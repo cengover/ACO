@@ -13,10 +13,10 @@ using namespace adevs;
 /// Assign identifiers to I/O ports
 const int Provider::payer_out = population+1;
 
-/// Get next service duration
-static double get_visit_time(){
+/// To get next service duration
+static double get_exponential(double i){
 
-	return rand_strm.exponential(provider_service_rate);
+	return rand_strm.exponential(i);
 }
 
 /// Get binary random variable
@@ -98,7 +98,7 @@ void Provider::delta_ext(double e, const adevs::Bag<IO>& xb){
 
 			// System entry time is recorded
 			(*i).value->entry_time = t;
-			(*i).value->service_duration = get_visit_time();
+			(*i).value->service_duration = get_exponential(provider_service_rate);
 			(*i).value->t_queue = 0;
 			// Add the patient to the list of patients
 			patients.push_back((*i).value);

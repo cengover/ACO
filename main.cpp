@@ -31,6 +31,7 @@ const string path = "/home/ozi/Desktop/Data/";
 const double termination_time = 200.0;
 int population = 200;
 
+/// Comment out if single run is necessary
 /*
 int Seed = 1;
 int numberOfProviders = 1;
@@ -64,8 +65,8 @@ std::string str5 = std::getenv("medication_period");
 double medication_period = atoi(str5.c_str());
 std::string str6 = std::getenv("intervention_rate");
 double intervention_rate = (double)atof(str6.c_str());
-
 //*/
+
 // Assign Random Number Seed
 static adevs::rv* rand_str_ptr = new adevs::rv(Seed);
 adevs::rv& rand_strm = *rand_str_ptr;
@@ -159,14 +160,13 @@ int main(){
 	Simulator<IO>* sim = new Simulator<IO>(beneN);
 	// Run the simulation
 	while (sim->nextEventTime() <= termination_time){
-
-		// Output next event time
+		// If temporal data is needed, it should be printed out here!
 		sim->execNextEvent();
 	}
 
-	// Bene output for each scenario and replication
+	// Bene output for each scenario and replication at termination state
 	output_bene(beneN);
-	// Provider output for each scenario and replication
+	// Provider output for each scenario and replication at termination state
 	output_provider(beneN);
 	// Clean up and exit
 	delete beneN;

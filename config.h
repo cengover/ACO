@@ -10,7 +10,7 @@
 #include "adevs.h"
 #include "Signal.h"
 
-// Parameters that are used in main() method
+// Parameters that are used for parameter sweep by the script
 extern adevs::rv& rand_strm;
 extern int Seed;
 extern int population;

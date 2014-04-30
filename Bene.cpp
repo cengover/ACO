@@ -12,14 +12,9 @@
 using namespace std;
 using namespace adevs;
 
-static double get_signal_time(){
+static double get_exponential(double i){
 
-	return rand_strm.exponential(bene_signal_rate);
-}
-
-static double get_medication_time(){
-
-	return rand_strm.exponential(medication_period);
+	return rand_strm.exponential(i);
 }
 
 static int get_binary(){
@@ -35,7 +30,7 @@ static double get_uniform(double a, double b){
 Bene::Bene():Atomic<IO>(){
 
 	t = 0;
-	tahead = get_signal_time();
+	tahead = get_exponential(bene_signal_rate);
 	t_conduct = 0;
 	t_cum = 0;
 	t_hospital = 0;
@@ -47,6 +42,7 @@ Bene::Bene():Atomic<IO>(){
 	gene = get_binary();
 	hospitalized = 0;
 	intervention = 0;
+	diagnosed = false;
 	id = 0;
 	total = 1;
 	influence = 1;
@@ -56,9 +52,7 @@ Bene::Bene():Atomic<IO>(){
 	memory_count = 0;
 	memory_factor = get_uniform(0.0,0.2);
 	tendency = 0;
-	// initialize progression
 	progression = 0;
-	diagnosed = false;
 }
 
 /// Internal transition function.
@@ -72,8 +66,8 @@ void Bene::delta_int(){
 		tendency = memory_factor*(influence/total)+(1-memory_factor)*tendency;
 		if (memory_count == memory){
 
-			influence = 1;
 			memory_count = 0;
+			influence = 1;
 			total = 1;
 		}
 
@@ -87,6 +81,7 @@ void Bene::delta_int(){
 		}
 		else if (temp>tendency){
 
+			// Update duration
 			update_duration();
 		}
 		// Update progression
@@ -104,7 +99,7 @@ void Bene::delta_ext(double e, const adevs::Bag<IO>& xb){
 		// If the bene comes back from a provider
 		if ((*i).value->from_provider == 1 && id ==(*i).value->id){
 
-			tahead = get_medication_time();
+			tahead = get_exponential(medication_period);
 			if (health == 1){
 
 				health = 0;
@@ -142,9 +137,10 @@ void Bene::output_func(adevs::Bag<IO>& yb){
 	sig->id = id;
 	sig->diagnosed = diagnosed;
 	sig->insurance = insurance;
-	// Here we assign state transitions
-	// Update progression
+	// Update duration and progression before evaluating
+	update_duration();
 	update_progression();
+	// Here we assign health status transitions
 	if (progression > threshold + w_health_for_threshold*health){
 
 		intervention = 0;
@@ -184,7 +180,7 @@ void Bene::output_func(adevs::Bag<IO>& yb){
 			IO output((*b),sig);
 			yb.insert(output);
 		}
-		tahead = get_signal_time();
+		tahead = get_exponential(bene_signal_rate);
 	}
 }
 

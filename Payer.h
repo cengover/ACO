@@ -38,8 +38,6 @@ class Payer: public adevs::Atomic<IO>
 		~Payer();
 		int total_number_of_patients;
 	private:
-		/// File for storing information about departing customers.
-		//std::ofstream output_strm;
 };
 
 #endif /* PAYER_H_ */
