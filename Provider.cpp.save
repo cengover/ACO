@@ -71,7 +71,7 @@ void Provider::delta_ext(double e, const adevs::Bag<IO>& xb){
 	}
 	if (e > tahead){
 
-		list<Signal*>::iterator s = patients.begin();
+		list<Signal*>::iterator s = patients.begin(
 		tahead = (*s)->service_duration;
 	}
 	else {

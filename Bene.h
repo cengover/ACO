@@ -33,6 +33,10 @@ class Bene: public adevs::Atomic<IO>
 		void update_progression();
 		/// Update Duration
 		void update_duration();
+		/// Create signal for bene to bene interaction
+		Signal* create_signal_to_bene();
+		/// Create signal for bene to provider interaction
+		Signal* create_signal_to_provider();
 		int id; // Identifier of bene
 		int insurance; // 0 = Exist, 1 = Not-exist
 		int lifestyle; // 0 = Un-Healthy, 1 = Healthy

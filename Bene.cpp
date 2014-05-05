@@ -130,16 +130,10 @@ void Bene::delta_conf(const adevs::Bag<IO>& xb){
 void Bene::output_func(adevs::Bag<IO>& yb){
 
 	t += tahead;
-	// create signal
-	Signal* sig = new Signal();
-	sig->health = health;
-	sig->lifestyle = lifestyle;
-	sig->id = id;
-	sig->diagnosed = diagnosed;
-	sig->insurance = insurance;
 	// Update duration and progression before evaluating
 	update_duration();
 	update_progression();
+
 	// Here we assign health status transitions
 	if (progression > threshold + w_health_for_threshold*health){
 
@@ -148,13 +142,12 @@ void Bene::output_func(adevs::Bag<IO>& yb){
 		if (health != 3){
 
 			health = health + 1;
-			sig->health = health;
 		}
 		vector<int>::iterator s  = signal_to_provider.begin();
 		if (insurance == 1){
 
-			sig->to_provider = 1; // to provider
 			hospitalized = 1;
+			Signal* sig = create_signal_to_provider();
 			IO output((*s),sig);
 			yb.insert(output);
 			update_duration();
@@ -162,21 +155,21 @@ void Bene::output_func(adevs::Bag<IO>& yb){
 		// After we add self-efficacy, we will change the condition
 		else if (insurance ==0 && get_uniform(0.0,1.0)>risk_aversion){
 
-			sig->to_provider = 1; // to provider
+
 			hospitalized = 1;
+			Signal* sig = create_signal_to_provider();
 			IO output((*s),sig);
 			yb.insert(output);
-			update_duration();
 		}
 		tahead = 0;
 	}
 	// Here interact with other agents
 	else {
 
-		sig->from_bene = 1; // from bene
 		vector<int>::iterator b  = this->signal_to_bene.begin();
 		for(;b!=signal_to_bene.end();b++){
 
+			Signal* sig = create_signal_to_bene();
 			IO output((*b),sig);
 			yb.insert(output);
 		}
@@ -199,7 +192,14 @@ double Bene::ta(){
 
 /// Output value garbage collection.
 void Bene::gc_output(adevs::Bag<IO>& g){
-};
+
+	// Delete the outgoing signal objects
+	Bag<IO>::iterator i;
+	for (i = g.begin(); i != g.end(); i++)
+	{
+		delete (*i).value;
+	}
+}
 
 /// Update progression
 void Bene::update_progression(){
@@ -232,4 +232,32 @@ void Bene::update_duration(){
 		duration = t_cum/(t-t_hospital);
 		t_conduct = 0;
 	}
+}
+
+/// Create signals for bene to bene interaction
+Signal* Bene::create_signal_to_bene(){
+
+	Signal* signal = new Signal();
+	// Add Output Signal Values
+	signal->id = id;
+	signal->health = health;
+	signal->lifestyle = lifestyle;
+	signal->diagnosed = diagnosed;
+	signal->insurance = insurance;
+	signal->from_bene = 1;
+	return signal;
+}
+
+/// Create signals for bene to provider interaction
+Signal* Bene::create_signal_to_provider(){
+
+	Signal* signal = new Signal();
+	// Add Output Signal Values
+	signal->id = id;
+	signal->health = health;
+	signal->lifestyle = lifestyle;
+	signal->diagnosed = diagnosed;
+	signal->insurance = insurance;
+	signal->to_provider = 1;
+	return signal;
 }
