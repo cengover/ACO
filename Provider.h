@@ -29,8 +29,10 @@ class Provider: public adevs::Atomic<IO>
 		double ta();
 		/// Output value garbage collection.
 		void gc_output(adevs::Bag<IO>& g);
-		/// To output a signal, create one
-		Signal* create_signal();
+		/// Destructor.
+		~Provider();
+		/// To output a signal
+		Signal* create_signal_to_bene();
 		/// To discharge serviced patient
 		void discharge(Provider* p);
 		int id; // Identifier of bene
