@@ -35,12 +35,12 @@ int population = 200;
 /*
 int Seed = 1;
 int numberOfProviders = 1;
-int connections = 2;
+int connections = 5;
 double bene_signal_rate = 5.0;
-double provider_service_rate = 1.0;
-double max_threshold = 0.40;
+double provider_service_rate = 5.0;
+double max_threshold = 0.20;
 double medication_period = 10.0;
-double intervention_rate = 0.50;
+double intervention_rate = 0.20;
 */
 
 const double w_health_for_threshold = 0.2;
@@ -72,39 +72,37 @@ static adevs::rv* rand_str_ptr = new adevs::rv(Seed);
 adevs::rv& rand_strm = *rand_str_ptr;
 
 // Methods to print out
-char* create_file_name(string name){
+string create_file_name(string name){
 
 	// Write a header describing the data fields
 	stringstream sstm;
-	sstm << path<< name<< population<<"_"<<connections<<"_"<<numberOfProviders<<"_"<<bene_signal_rate
+	sstm<<path<<name<<population<<"_"<<connections<<"_"<<numberOfProviders<<"_"<<bene_signal_rate
 				<<"_"<<provider_service_rate<<"_"<<weights_in_progression[4]<<"_"<<max_threshold<<
 				"_"<<medication_period<<"_"<<intervention_rate<<"_"<<Seed<<".txt";
 	string file = sstm.str();
-	char * output = (char *) file.c_str();
-	return output;
+	return file;
 }
 
 void output_bene(BeneNetwork* beneN){
 
-	char * bene_file = create_file_name("Bene_");
-	ofstream bene_output;
-	bene_output.open(bene_file);
+	string a = "Bene_";
+	string bene_file = create_file_name(a);
+	ofstream bene_output(bene_file.c_str());
 	list<Bene*>::iterator bene = beneN->beneficiaries.begin();
-		for (bene = beneN->beneficiaries.begin(); bene != beneN->beneficiaries.end(); bene++){
+	for (; bene != beneN->beneficiaries.end(); bene++){
 
-			bene_output<<"Bene "<<population<<" "<<connections<<" "<<numberOfProviders<<" "<<bene_signal_rate
-					<<" "<<provider_service_rate<<" "<<weights_in_progression[4]<<" "<<max_threshold<<
-					" "<<medication_period<<" "<<intervention_rate<<" "<<Seed<<" "<<(*bene)->id<<" "<<(*bene)->health<<" "<<(*bene)->lifestyle<<
-					" "<<(*bene)->diagnosed<<" "<<(*bene)->t_cum<<" "<<(*bene)->t_queue<<" "<<(*bene)->t_hospital<<endl;
+		bene_output<<"Bene "<<population<<" "<<connections<<" "<<numberOfProviders<<" "<<bene_signal_rate
+			<<" "<<provider_service_rate<<" "<<weights_in_progression[4]<<" "<<max_threshold<<
+			" "<<medication_period<<" "<<intervention_rate<<" "<<Seed<<" "<<(*bene)->id<<" "<<(*bene)->health<<" "<<(*bene)->lifestyle<<
+			" "<<(*bene)->diagnosed<<" "<<(*bene)->t_cum<<" "<<(*bene)->t_queue<<" "<<(*bene)->t_hospital<<endl;
 	}
 	bene_output.close();
 }
 
 void output_provider(BeneNetwork* beneN){
-
-	char * pro_file = create_file_name("Provider_");
-	ofstream pro_output;
-	pro_output.open(pro_file);
+	string a = "Provider_";
+	string pro_file = create_file_name(a);
+	ofstream pro_output(pro_file.c_str());
 	list<Provider*>::iterator pro = beneN->providers.begin();
 	for (pro = beneN->providers.begin(); pro != beneN->providers.end(); pro++){
 
