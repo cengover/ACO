@@ -16,7 +16,8 @@ const int Provider::payer_out = population+1;
 /// To get next service duration
 static double get_exponential(double i){
 
-	return rand_strm.exponential(i);
+	//return rand_strm.exponential(i);
+	return i;
 }
 
 /// Get binary random variable

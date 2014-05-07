@@ -14,7 +14,8 @@ using namespace adevs;
 
 static double get_exponential(double i){
 
-	return rand_strm.exponential(i);
+	//return rand_strm.exponential(i);
+	return i;
 }
 
 static int get_binary(){

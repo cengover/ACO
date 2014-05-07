@@ -28,23 +28,23 @@ using namespace std;
 //DEFINE PARAMETERS HERE
 // Output path
 const string path = "/home/ozi/Desktop/Data/";
-const double termination_time = 200.0;
+const double termination_time = 1000.0;
 const bool par = false;
-int population = 200;
+int population = 10000;
 
 /// Comment out if single run is necessary
 ///*
 int Seed = 1;
-int numberOfProviders = 1;
+int numberOfProviders = 10;
 int connections = 5;
 double bene_signal_rate = 5.0;
 double provider_service_rate = 5.0;
 double max_threshold = 0.20;
-double medication_period = 10.0;
+double medication_period = 5.0;
 double intervention_rate = 0.20;
 //*/
 
-const double t_lookahead = 5;
+const double t_lookahead = 0.1;
 const double w_health_for_threshold = 0.2;
 const int factors_progression = 5;
 const double weights_in_progression[factors_progression] = {0.2,0.2,0.2,0.2,0.2};
@@ -157,21 +157,27 @@ int main(){
 	// Create the model
 	BeneNetwork* beneN = new BeneNetwork();
 	// Create the simulator
-	ParSimulator<IO>* sim = new ParSimulator<IO>(beneN);
-	//Simulator<IO>* sim = new Simulator<IO>(beneN);
+	AbstractSimulator<IO>* sim;
+	if(par==true){
 
+		sim = new ParSimulator<IO>(beneN);
+	}
+	else{
+
+		sim = new Simulator<IO>(beneN);
+	}
 	// Run the simulation
-	// Output next event time
-	//cout<<sim->nextEventTime()<<endl;
 	sim->execUntil(termination_time);
 
 	// Bene output for each scenario and replication at termination state
 	output_bene(beneN);
 	// Provider output for each scenario and replication at termination state
 	output_provider(beneN);
+
 	// Clean up and exit
 	delete beneN;
 	delete sim;
+	delete &rand_strm;
 	// Record the end of elapsed time
 	double cpu_end = get_cpu_time();
 	double wall_end = get_wall_time();
