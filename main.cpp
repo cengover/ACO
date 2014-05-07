@@ -28,18 +28,18 @@ using namespace std;
 //DEFINE PARAMETERS HERE
 // Output path
 const string path = "/home/ozi/Desktop/Data/";
-const double termination_time = 1000.0;
-int population = 10000;
+const double termination_time = 200.0;
+int population = 200;
 
 /// Comment out if single run is necessary
 ///*
 int Seed = 1;
-int numberOfProviders = 10;
+int numberOfProviders = 1;
 int connections = 5;
 double bene_signal_rate = 5.0;
 double provider_service_rate = 5.0;
 double max_threshold = 0.20;
-double medication_period = 5.0;
+double medication_period = 10.0;
 double intervention_rate = 0.20;
 //*/
 
@@ -169,6 +169,7 @@ int main(){
 	// Clean up and exit
 	delete beneN;
 	delete sim;
+	delete &rand_strm;
 	// Record the end of elapsed time
 	double cpu_end = get_cpu_time();
 	double wall_end = get_wall_time();
