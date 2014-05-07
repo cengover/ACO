@@ -11,57 +11,26 @@ using namespace std;
 using namespace adevs;
 
 /// Assign identifiers to I/O ports
-//Provider::signal_insignal_in = 0;
-//int Provider::signal_out = 1;
 const int Provider::payer_out = population+1;
 
-/// Get next service duration
-static double get_visit_time(){
+/// To get next service duration
+static double get_exponential(double i){
 
-	return rand_strm.exponential(provider_service_rate);
-	//return provider_service_rate;
+	return rand_strm.exponential(i);
 }
 
 /// Get binary random variable
-static int get_binary(){
+static int random_process(double rate){
 
-	return ceil(rand_strm.uniform(0.0,1.0)-0.5);
-}
+	double r = rand_strm.uniform(0.0,1.0);
+	if (r < rate){
 
-/// Create a signal
-Signal* Provider::create_signal(){
-
-	Signal* sig = new Signal();
-	list<Signal*>::iterator iter = patients.begin();
-	/// Add Output Signal Values
-	sig->id = (*iter)->id;
-	sig->intervention = get_binary();
-	sig->from_provider = 1;
-	sig->service_duration= (*iter)->service_duration;
-	sig->entry_time = (*iter)->entry_time;
-	sig->t_queue = (*iter)->t_queue;
-
-	///Intervention budget is incremented
-	if (sig->intervention == 1){
-
-		this->intervention_budget += 0.1;
+		return 1;
 	}
-	return sig;
-}
+	else{
 
-/// Discharge Function
-void Provider::discharge(Provider* p){
-
-	list<Signal*>::iterator iter = p->patients.begin();
-	if((*iter)->diagnosed == false){
-
-		p->distinct_patients += 1;
+		return 0;
 	}
-	p->total_patients+=1;
-	p->service_cost += (*iter)->health*((*iter)->insurance+1);
-	p->busy_time+=(*iter)->service_duration;
-	//cout<<id<<" "<<p->t<<" "<<(*iter)->id<<" Discharge"<<endl;
-	p->patients.erase(p->patients.begin());
 }
 
 /// Constructor
@@ -94,17 +63,16 @@ void Provider::delta_ext(double e, const adevs::Bag<IO>& xb){
 
 			// System entry time is recorded
 			(*i).value->entry_time = t;
-			(*i).value->service_duration = get_visit_time();
+			(*i).value->service_duration = get_exponential(provider_service_rate);
 			(*i).value->t_queue = 0;
 			// Add the patient to the list of patients
-			patients.push_back((*i).value);
-			//cout<<id<< " "<<t<<" "<<(*i).value->id<<" "<<(*i).value->service_duration<<" IN "<<endl;
+			patients.push_back(new Signal(*(*i).value));
 		}
 	}
 	if (e > tahead){
 
-		list<Signal*>::iterator sig = patients.begin();;
-		tahead = (*sig)->service_duration;
+		list<Signal*>::iterator s = patients.begin();
+		tahead = (*s)->service_duration;
 	}
 	else {
 
@@ -122,24 +90,24 @@ void Provider::delta_conf(const adevs::Bag<IO>& xb){
 /// Output function.
 void Provider::output_func(adevs::Bag<IO>& yb){
 
-	Signal* sig = new Signal();
-	sig = create_signal();
+	t += tahead;
 	vector<int>::iterator it  = this->signal_out.begin();
+	list<Signal*>::iterator iter = patients.begin();
 	for(;it!=signal_out.end();it++){
-		if ((*it) == sig->id){
-
+		if ((*it) == (*iter)->id){
+			// Create distinct signal for each output
+			Signal* sig = create_signal_to_bene();
 			IO output((*it), sig);
 			yb.insert(output);
+			// Remove the discharged bene
+			discharge(this);
 			break;
 		}
 	}
 	// If Payer will be notified
-	// sig->to_payer = 1;
+	// signal->to_payer = 1;
 	// IO output1(payer_out, sig);
 	// yb.insert(output1);
-	t += tahead;
-	// Remove the discharged bene
-	discharge(this);
 	if (patients.size() > 0){
 
 		list<Signal*>::iterator si = patients.begin();
@@ -168,5 +136,57 @@ double Provider::ta(){
 /// Output value garbage collection.
 void Provider::gc_output(adevs::Bag<IO>& g){
 
-};
+	// Delete the outgoing signal objects
+	Bag<IO>::iterator i;
+	for (i = g.begin(); i != g.end(); i++)
+	{
+		delete (*i).value;
+	}
+}
 
+Provider::~Provider()
+{
+	// Delete anything remaining in the customer queue
+	list<Signal*>::iterator i;
+	for (i = patients.begin(); i != patients.end(); i++)
+	{
+		delete *i;
+	}
+}
+
+/// Create a signal for provider to bene interaction
+Signal* Provider::create_signal_to_bene(){
+
+	Signal* signal = new Signal();
+	// Get the first customer in the queue
+	list<Signal*>::iterator iter = patients.begin();
+	// Add Output Signal Values
+	signal->id = (*iter)->id;
+	signal->intervention = random_process(intervention_rate);
+	signal->from_provider = 1;
+	signal->service_duration= (*iter)->service_duration;
+	signal->entry_time = (*iter)->entry_time;
+	signal->t_queue = (*iter)->t_queue;
+
+	// Intervention budget is incremented
+	if (signal->intervention == 1){
+
+		this->intervention_budget += 0.1;
+	}
+	return signal;
+}
+
+/// Discharge Function
+void Provider::discharge(Provider* p){
+
+	list<Signal*>::iterator iter = p->patients.begin();
+	if((*iter)->diagnosed == false){
+
+		p->distinct_patients += 1;
+	}
+	p->total_patients+=1;
+	p->service_cost += (*iter)->health*((*iter)->insurance+1);
+	p->busy_time+=(*iter)->service_duration;
+	delete *iter;
+	p->patients.erase(iter);
+}

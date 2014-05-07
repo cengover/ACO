@@ -14,7 +14,6 @@ using namespace adevs;
 const int Payer::output_port = 0;
 
 Payer::Payer():Atomic<IO>()
-//output_strm(output_file)
 {
 	total_number_of_patients = 0;
 }

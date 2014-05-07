@@ -29,8 +29,10 @@ class Provider: public adevs::Atomic<IO>
 		double ta();
 		/// Output value garbage collection.
 		void gc_output(adevs::Bag<IO>& g);
-		/// To output a signal, create one
-		Signal* create_signal();
+		/// Destructor.
+		~Provider();
+		/// To output a signal
+		Signal* create_signal_to_bene();
 		/// To discharge serviced patient
 		void discharge(Provider* p);
 		/// Lookahead
@@ -38,22 +40,23 @@ class Provider: public adevs::Atomic<IO>
 
 			return t_lookahead;
 		}
-		int id;
-		double t;
-		double busy_time;
-		double service_cost;
-		double intervention_budget;
-		int total_patients;
-		int distinct_patients;
-		//int resources;
-		//std::list<Signal*> in_service;
+		int id; // Identifier of bene
+		double t; // Synchronized with Simulation Time
+		double busy_time; // Total number of busy time serving
+		double service_cost; // Total service cost
+		double intervention_budget; // Cumulative intervention cost
+		int total_patients; // Cumulative number of patients served
+		int distinct_patients; // Distinct number of patients who are served
+		// List of patients in the line
 		std::list<Signal*> patients;
+		// Model input/output ports
 		std::vector<int>  signal_in;
 		std::vector<int> signal_out;
 		static const int payer_out;
+
 	private:
 
-		double tahead;
+		double tahead; // Time to next event
 };
 
 #endif /* PROVIDER_H_ */

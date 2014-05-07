@@ -31,74 +31,86 @@ const string path = "/home/ozi/Desktop/Data/";
 const double termination_time = 200.0;
 const bool par = false;
 int population = 200;
-int numberOfProviders = 1;
 
-
- ///*
+/// Comment out if single run is necessary
+///*
 int Seed = 1;
-int connections = 2;
+int numberOfProviders = 1;
+int connections = 5;
 double bene_signal_rate = 5.0;
-double provider_service_rate = 1.0;
- //*/
+double provider_service_rate = 5.0;
+double max_threshold = 0.20;
+double medication_period = 10.0;
+double intervention_rate = 0.20;
+//*/
 
 const double t_lookahead = 5;
-const int capacity = 1; // To be changed after adding multiple servers/doctors
 const double w_health_for_threshold = 0.2;
 const int factors_progression = 5;
 const double weights_in_progression[factors_progression] = {0.2,0.2,0.2,0.2,0.2};
 
 // Environmental variables to use in scenarios (in run-abm.sh)
- /*
+/*
 std::string str = std::getenv("Seed");
 int Seed = atoi(str.c_str());
+std::string str0 = std::getenv("numberOfProviders");
+int numberOfProviders = atoi(str0.c_str());
 std::string str1 = std::getenv("connections");
 int connections = atoi(str1.c_str());
 std::string str2 = std::getenv("bene_signal_rate");
 double bene_signal_rate = atoi(str2.c_str());
 std::string str3 = std::getenv("provider_service_rate");
 double provider_service_rate = atoi(str3.c_str());
- */
-// Assign Ransom Number Seed
+std::string str4 = std::getenv("max_threshold");
+double max_threshold = (double)atof(str4.c_str());
+std::string str5 = std::getenv("medication_period");
+double medication_period = atoi(str5.c_str());
+std::string str6 = std::getenv("intervention_rate");
+double intervention_rate = (double)atof(str6.c_str());
+*/
+
+// Assign Random Number Seed
 static adevs::rv* rand_str_ptr = new adevs::rv(Seed);
 adevs::rv& rand_strm = *rand_str_ptr;
 
 // Methods to print out
-char* create_file_name(string name){
+string create_file_name(string name){
 
 	// Write a header describing the data fields
 	stringstream sstm;
-	sstm << path<< name<< population<<"_"<<connections<<"_"<<numberOfProviders<<"_"<<bene_signal_rate
-				<<"_"<<provider_service_rate<<"_"<<Seed<<".txt";
+	sstm<<path<<name<<population<<"_"<<connections<<"_"<<numberOfProviders<<"_"<<bene_signal_rate
+				<<"_"<<provider_service_rate<<"_"<<weights_in_progression[4]<<"_"<<max_threshold<<
+				"_"<<medication_period<<"_"<<intervention_rate<<"_"<<Seed<<".txt";
 	string file = sstm.str();
-	char * output = (char *) file.c_str();
-	return output;
+	return file;
 }
 
 void output_bene(BeneNetwork* beneN){
 
-	char * bene_file = create_file_name("Bene_");
-	ofstream bene_output;
-	bene_output.open(bene_file);
+	string a = "Bene_";
+	string bene_file = create_file_name(a);
+	ofstream bene_output(bene_file.c_str());
 	list<Bene*>::iterator bene = beneN->beneficiaries.begin();
-		for (bene = beneN->beneficiaries.begin(); bene != beneN->beneficiaries.end(); bene++){
+	for (; bene != beneN->beneficiaries.end(); bene++){
 
-			bene_output<<"Bene "<<population<<" "<<connections<<" "<<numberOfProviders<<" "<<bene_signal_rate
-					<<" "<<provider_service_rate<<" "<<Seed<<" "<<(*bene)->id<<" "<<(*bene)->health<<" "<<(*bene)->behavior<<
-					" "<<(*bene)->diagnosed<<" "<<(*bene)->t_cum<<" "<<" "<<(*bene)->t_queue<<" "<<(*bene)->t_hospital<<endl;
+		bene_output<<"Bene "<<population<<" "<<connections<<" "<<numberOfProviders<<" "<<bene_signal_rate
+			<<" "<<provider_service_rate<<" "<<weights_in_progression[4]<<" "<<max_threshold<<
+			" "<<medication_period<<" "<<intervention_rate<<" "<<Seed<<" "<<(*bene)->id<<" "<<(*bene)->health<<" "<<(*bene)->lifestyle<<
+			" "<<(*bene)->diagnosed<<" "<<(*bene)->t_cum<<" "<<(*bene)->t_queue<<" "<<(*bene)->t_hospital<<endl;
 	}
 	bene_output.close();
 }
 
 void output_provider(BeneNetwork* beneN){
-
-	char * pro_file = create_file_name("Provider_");
-	ofstream pro_output;
-	pro_output.open(pro_file);
+	string a = "Provider_";
+	string pro_file = create_file_name(a);
+	ofstream pro_output(pro_file.c_str());
 	list<Provider*>::iterator pro = beneN->providers.begin();
 	for (pro = beneN->providers.begin(); pro != beneN->providers.end(); pro++){
 
 		pro_output << "Provider "<<population<<" "<<connections<<" "<<numberOfProviders<<" "<<bene_signal_rate
-			<<" "<<provider_service_rate<<" "<<Seed<<" "<<(*pro)->id<<" "<<(*pro)->busy_time<<" "<<(*pro)->total_patients<<" "<<(*pro)->distinct_patients
+			<<" "<<provider_service_rate<<" "<<weights_in_progression[4]<<" "<<max_threshold<<
+			" "<<medication_period<<" "<<intervention_rate<<" "<<Seed<<" "<<(*pro)->id<<" "<<(*pro)->busy_time<<" "<<(*pro)->total_patients<<" "<<(*pro)->distinct_patients
 			<<" "<<(*pro)->service_cost<<" "<<(*pro)->intervention_budget<<endl;
 	}
 	pro_output.close();
@@ -153,9 +165,9 @@ int main(){
 	//cout<<sim->nextEventTime()<<endl;
 	sim->execUntil(termination_time);
 
-	// Bene output for each scenario and replication
+	// Bene output for each scenario and replication at termination state
 	output_bene(beneN);
-	// Provider output for each scenario and replication
+	// Provider output for each scenario and replication at termination state
 	output_provider(beneN);
 	// Clean up and exit
 	delete beneN;
