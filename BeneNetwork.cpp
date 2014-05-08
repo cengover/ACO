@@ -48,6 +48,7 @@ void BeneNetwork::add_provider() {
 		Provider* pro = new Provider();
 		pro->id = population+i;
 		add(pro);
+		pro->setProc(0);
 		providers.push_back(pro);
 	}
 }

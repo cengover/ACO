@@ -43,23 +43,23 @@ class Provider: public adevs::Atomic<IO>
 		/// Begin lookahead
 		void beginLookahead(){
 
-			chkpt.t = this->t;
+			/*chkpt.t = this->t;
 			chkpt.busy_time = this->busy_time;
 			chkpt.distinct_patients = this->distinct_patients;
 			chkpt.intervention_budget = this->intervention_budget;
 			chkpt.service_cost = this->service_cost;
-			chkpt.total_patients = this->total_patients;
+			chkpt.total_patients = this->total_patients;*/
 
 		}
 		/// End lookahead
 		void endLookahead(){
 
-			this->t = chkpt.t;
+			/*this->t = chkpt.t;
 			this->busy_time = chkpt.busy_time;
 			this->distinct_patients = chkpt.distinct_patients;
 			this->intervention_budget = chkpt.intervention_budget;
 			this->service_cost = chkpt.service_cost;
-			this->total_patients = chkpt.total_patients;
+			this->total_patients = chkpt.total_patients;*/
 		}
 		int id; // Identifier of bene
 		double t; // Synchronized with Simulation Time
@@ -78,7 +78,7 @@ class Provider: public adevs::Atomic<IO>
 	private:
 
 		double tahead; // Time to next event
-		struct checkpoint{
+		/*struct checkpoint{
 
 			double t; // Synchronized with Simulation Time
 			double busy_time; // Total number of busy time serving
@@ -88,7 +88,7 @@ class Provider: public adevs::Atomic<IO>
 			int distinct_patients; // Distinct number of patients who are served
 
 		};
-		checkpoint chkpt;
+		checkpoint chkpt;*/
 };
 
 #endif /* PROVIDER_H_ */

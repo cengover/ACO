@@ -36,12 +36,25 @@ class Payer: public adevs::Atomic<IO>
 		void gc_output(adevs::Bag<IO>& g);
 		/// Destructor.
 		~Payer();
+		/// Lookahead
 		double lookahead(){
 
 			return t_lookahead;
 		}
+		/// Begin lookahead
+		void beginLookahead(){
+
+		}
+		/// End lookahead
+		void endLookahead(){
+
+		}
 		int total_number_of_patients;
 	private:
+		/*struct checkpoint{
+
+		};
+		checkpoint chkpt;*/
 };
 
 #endif /* PAYER_H_ */

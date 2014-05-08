@@ -26,8 +26,25 @@ class BeneNetwork: public adevs::Digraph<Signal*> {
 		// This is for the provider set
 		std::list<Provider*> providers;
 		std::vector<Payer*> payer;
-		// Lookahead
-		double lookahead() { return t_lookahead; }
+		/// Lookahead
+		double lookahead(){
+
+			return t_lookahead;
+		}
+		/// Begin lookahead
+		void beginLookahead(){
+
+			/*chkpt.beneficiaries = this->beneficiaries;
+			chkpt.providers = this->providers;
+			chkpt.payer = this->payer;*/
+		}
+		/// End lookahead
+		void endLookahead(){
+
+			/*this->beneficiaries = chkpt.beneficiaries;
+			this->providers = chkpt.providers;
+			this->payer = chkpt.payer;*/
+		}
 	private:
 		// Method for adding a benes to the network
 		void add_bene();
@@ -38,6 +55,15 @@ class BeneNetwork: public adevs::Digraph<Signal*> {
 		// Method for connecting benes
 		void connect_providers(Bene* src);
 
+		struct checkpoint{
+			/*// This is for the bene set
+			std::list<Bene*> beneficiaries;
+			// This is for the provider set
+			std::list<Provider*> providers;
+			std::vector<Payer*> payer;*/
+
+		};
+		checkpoint chkpt;
 };
 
 #endif /* BENENETWORK_H_ */

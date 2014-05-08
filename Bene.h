@@ -39,7 +39,7 @@ class Bene: public adevs::Atomic<IO>
 		/// Begin lookahead
 		void beginLookahead(){
 
-			chkpt.t = this->t;
+			/*chkpt.t = this->t;
 			chkpt.diagnosed = this->diagnosed;
 			chkpt.duration = this->duration;
 			chkpt.health = this->health;
@@ -57,13 +57,13 @@ class Bene: public adevs::Atomic<IO>
 			chkpt.tahead = this->tahead;
 			chkpt.tendency = this->tendency;
 			chkpt.threshold = this->threshold;
-			chkpt.total = this->total;
+			chkpt.total = this->total;*/
 
 		}
 		/// End lookahead
 		void endLookahead(){
 
-			this->t = chkpt.t;
+			/*this->t = chkpt.t;
 			this->diagnosed = chkpt.diagnosed;
 			this->duration = chkpt.duration;
 			this->health = chkpt.health;
@@ -81,7 +81,7 @@ class Bene: public adevs::Atomic<IO>
 			this->tahead = chkpt.tahead;
 			this->tendency = chkpt.tendency;
 			this->threshold = chkpt.threshold;
-			this->total = chkpt.total;
+			this->total = chkpt.total;*/
 		}
 		/// Update Duration
 		void update_duration();
@@ -124,7 +124,7 @@ class Bene: public adevs::Atomic<IO>
 		double threshold; // Threshold of progress of diabetes
 		double progression; // Progress of diabetes (between 0 and 1)
 		double risk_aversion; // To be used for un-insured benes
-		struct checkpoint{
+		/*struct checkpoint{
 
 			int lifestyle; // 0 = Un-Healthy, 1 = Healthy
 			int health; // 0 = Healthy, 1 = Pre-Diabetes, 2 = Diabetes, 3 = Insulin Dependence, 4 = Death (Is not emplemented yet)
@@ -146,7 +146,7 @@ class Bene: public adevs::Atomic<IO>
 			double progression; // Progress of diabetes (between 0 and 1)
 
 		};
-		checkpoint chkpt;
+		checkpoint chkpt;*/
 };
 
 #endif /* BENE_H_ */
