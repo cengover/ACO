@@ -1,23 +1,23 @@
 #!/bin/bash
 total=0
-thresholdList=(0.2)
-interventionList=(0.6)
+thresholdList=(0.2 0.3 0.4 0.6)
+interventionList=(0.2 0.4 0.6 0.8)
 make abm
-for((c = 1; c <= 20; c+=3))
+for((c = 20; c <= 20; c+=3))
 do
-	for((p = 1; p<=10; p+=3))
+	for((p = 1; p<=1; p+=3))
 	do
-		for((b = 1; b<=10; b+=3))
+		for((b = 1; b<=1; b+=3))
 		do
-			for((n = 1; n<=21; n+=10))
+			for((n = 21; n<=21; n+=10))
 			do
 				for threshold in ${thresholdList[@]}
 				do
-					for((med = 10; med<=10; med+=5))
+					for((med = 5; med<=15; med+=5))
 					do
 						for intervention in ${interventionList[@]}
 						do
-							for ((run = 1; run <= 10;++run))
+							for ((run = 1; run <= 30;++run))
 							do
 							total=$(($total+1))
 							echo $total

@@ -163,9 +163,9 @@ int main(){
 	}
 
 	// Bene output for each scenario and replication at termination state
-	//output_bene(beneN);
+	output_bene(beneN);
 	// Provider output for each scenario and replication at termination state
-	//output_provider(beneN);
+	output_provider(beneN);
 	// Clean up and exit
 	delete beneN;
 	delete sim;
