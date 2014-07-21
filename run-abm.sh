@@ -1,5 +1,6 @@
 #!/bin/bash
 total=0
+<<<<<<< HEAD
 thresholdList=(0.2 0.3 0.4 0.6)
 interventionList=(0.2 0.4 0.6 0.8)
 make abm
@@ -10,6 +11,18 @@ do
 		for((b = 1; b<=1; b+=3))
 		do
 			for((n = 21; n<=21; n+=10))
+=======
+thresholdList=(0.2)
+interventionList=(0.6)
+make abm
+for((c = 1; c <= 20; c+=3))
+do
+	for((p = 1; p<=10; p+=3))
+	do
+		for((b = 1; b<=10; b+=3))
+		do
+			for((n = 1; n<=21; n+=10))
+>>>>>>> 0b302558c95f6c83263deb6fd81d44fa452f03ce
 			do
 				for threshold in ${thresholdList[@]}
 				do
