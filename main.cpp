@@ -28,18 +28,18 @@ using namespace std;
 //DEFINE PARAMETERS HERE
 // Output path
 const string path = "/home/ozi/Desktop/Data/";
-const double termination_time = 1000.0;
-int population = 20000;
+const double termination_time = 200.0;
+int population = 100;
 
 /// Comment out if single run is necessary
 /*
 int Seed = 1;
 int numberOfProviders = 1;
 int connections = 5;
-double bene_signal_rate = 5.0;
-double provider_service_rate = 5.0;
+double bene_signal_rate = 1.0;
+double provider_service_rate = 1.0;
 double max_threshold = 0.20;
-double medication_period = 10.0;
+double medication_period = 1.0;
 double intervention_rate = 0.20;
 */
 
@@ -94,7 +94,8 @@ void output_bene(BeneNetwork* beneN){
 		bene_output<<"Bene "<<population<<" "<<connections<<" "<<numberOfProviders<<" "<<bene_signal_rate
 			<<" "<<provider_service_rate<<" "<<weights_in_progression[4]<<" "<<max_threshold<<
 			" "<<medication_period<<" "<<intervention_rate<<" "<<Seed<<" "<<(*bene)->id<<" "<<(*bene)->health<<" "<<(*bene)->lifestyle<<
-			" "<<(*bene)->diagnosed<<" "<<(*bene)->t_cum<<" "<<(*bene)->t_queue<<" "<<(*bene)->t_hospital<<endl;
+			" "<<(*bene)->diagnosed<<" "<<(*bene)->t_cum<<" "<<(*bene)->t_queue<<" "<<(*bene)->t_hospital<<" "
+			<<(*bene)->duration<<" "<<endl;
 	}
 	bene_output.close();
 }
@@ -163,9 +164,9 @@ int main(){
 	}
 
 	// Bene output for each scenario and replication at termination state
-	//output_bene(beneN);
+	output_bene(beneN);
 	// Provider output for each scenario and replication at termination state
-	//output_provider(beneN);
+	output_provider(beneN);
 	// Clean up and exit
 	delete beneN;
 	delete sim;

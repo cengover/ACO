@@ -14,7 +14,8 @@ using namespace adevs;
 
 static double get_exponential(double i){
 
-	return rand_strm.exponential(i);
+	//return rand_strm.exponential(i);
+	return i;
 }
 
 static int get_binary(){
@@ -48,7 +49,7 @@ Bene::Bene():Atomic<IO>(){
 	influence = 1;
 	threshold = get_uniform(0.0,max_threshold);
 	risk_aversion = get_uniform(0.0,1.0);
-	memory = 1;
+	memory = 5;
 	memory_count = 0;
 	memory_factor = get_uniform(0.0,0.2);
 	tendency = 0;
@@ -70,7 +71,6 @@ void Bene::delta_int(){
 			influence = 1;
 			total = 1;
 		}
-
 		if (temp<=tendency){
 
 			if (lifestyle != 1){
@@ -82,9 +82,15 @@ void Bene::delta_int(){
 		else if (temp>tendency){
 
 			// Update duration
-			update_duration();
+			if (lifestyle != 0){
+
+				this->lifestyle = 0;
+				t_cum = t_cum + (t-t_conduct);
+				// Update Duration
+				duration = (double)t_cum/(t-t_hospital);
+				t_conduct = t;
+			}
 		}
-		// Update progression
 		update_progression();
 	}
 }
@@ -130,10 +136,19 @@ void Bene::delta_conf(const adevs::Bag<IO>& xb){
 void Bene::output_func(adevs::Bag<IO>& yb){
 
 	t += tahead;
-	// Update duration and progression before evaluating
-	update_duration();
-	update_progression();
 
+	if (lifestyle != 0){
+
+		t_cum = t_cum + (t-t_conduct);
+		// Update Duration
+		duration = (double)t_cum/(t-t_hospital);
+		t_conduct = t;
+	}
+	else if(lifestyle == 0){
+		// Update Duration
+		duration = (double)t_cum/(t-t_hospital);
+	}
+	update_progression();
 	// Here we assign health status transitions
 	if (progression > threshold + w_health_for_threshold*health){
 
@@ -154,7 +169,6 @@ void Bene::output_func(adevs::Bag<IO>& yb){
 		}
 		// After we add self-efficacy, we will change the condition
 		else if (insurance ==0 && get_uniform(0.0,1.0)>risk_aversion){
-
 
 			hospitalized = 1;
 			Signal* sig = create_signal_to_provider();
@@ -204,6 +218,7 @@ void Bene::gc_output(adevs::Bag<IO>& g){
 /// Update progression
 void Bene::update_progression(){
 
+	duration = (double)t_cum/(t-t_hospital);
 	if (t_cum > 0){
 
 		progression = weights_in_progression[0]*gene+weights_in_progression[1]*lifestyle
@@ -226,11 +241,10 @@ void Bene::update_duration(){
 
 	if (lifestyle != 0){
 
-		lifestyle = 0;
 		t_cum = t_cum + (t-t_conduct);
 		// Update Duration
-		duration = t_cum/(t-t_hospital);
-		t_conduct = 0;
+		duration = (double)t_cum/(t-t_hospital);
+		t_conduct = t;
 	}
 }
 
